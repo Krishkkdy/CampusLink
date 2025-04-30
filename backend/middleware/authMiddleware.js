@@ -20,6 +20,28 @@ export const protect = async (req, res, next) => {
   }
 };
 
+
+// Add role-based middleware
+
+export const checkRole = (roles) => {
+
+  return (req, res, next) => {
+
+    if (!roles.includes(req.user.role)) {
+
+      return res.status(403).json({ 
+
+        message: 'Not authorized to access this resource'
+
+      });
+
+    }
+
+    next();
+
+  };
+};
+
 export const admin = (req, res, next) => {
   if (req.user && req.user.role === 'admin') {
     next();
@@ -41,5 +63,13 @@ export const allowViewAlumni = async (req, res, next) => {
     next();
   } else {
     res.status(401).json({ message: 'Not authorized to view alumni' });
+  }
+};
+
+export const alumniOnly = (req, res, next) => {
+  if (req.user && req.user.role === 'alumni') {
+    next();
+  } else {
+    res.status(401).json({ message: 'Not authorized, alumni only' });
   }
 };

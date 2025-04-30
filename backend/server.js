@@ -10,6 +10,7 @@ import eventRoutes from './routes/eventRoutes.js';
 import messageRoutes from './routes/messageRoutes.js';
 import Message from './models/Message.js';
 import User from './models/User.js';  // Add User model import
+import resumeRoutes from './routes/resumeRoutes.js';
 
 dotenv.config();
 
@@ -30,6 +31,8 @@ app.use(cors({
 
 app.use(express.json());
 
+app.use('/uploads', express.static('uploads'));
+
 // Test route
 app.get('/test', (req, res) => {
   res.json({ message: 'Backend server is running!' });
@@ -37,6 +40,11 @@ app.get('/test', (req, res) => {
 
 // Connect to MongoDB
 connectDB();
+
+
+// Serve uploaded files
+
+app.use('/uploads', express.static('uploads'));
 
 // Socket.IO connection handling
 const userSockets = new Map(); // Store user socket mappings
@@ -145,6 +153,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/resumes', resumeRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

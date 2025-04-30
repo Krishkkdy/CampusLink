@@ -35,6 +35,9 @@ import Messages from './pages/common/Messages';
 import "./styles/shared.css";
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+import StudentResume from './pages/student/StudentResume';
+import ViewResumeFeedback from './pages/student/ViewResumeFeedback';
+import ResumeReview from './pages/alumni/ResumeReview';
 
 function App() {
   return (
@@ -78,6 +81,7 @@ function App() {
             <Route path="/alumni/view-events" element={<ViewEvents />} />
             <Route path="/alumni/view-alumni-profiles" element={<ViewAlumniProfiles />} />
             <Route path="/alumni/messages" element={<Messages />} />
+            <Route path="/alumni/resume-review" element={<ResumeReview />} />
           </Route>
 
           {/* Student Routes */}
@@ -86,6 +90,8 @@ function App() {
             <Route path="/student/profile" element={<StudentProfile />} />
             <Route path="/student/network" element={<ViewNetwork />} />
             <Route path="/student/messages" element={<Messages />} />
+            <Route path="/student/resume" element={<StudentResume />} />
+            <Route path="/student/resume-feedback" element={<ViewResumeFeedback />} />
           </Route>
         </Routes>
       </Router>

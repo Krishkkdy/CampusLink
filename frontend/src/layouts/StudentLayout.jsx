@@ -19,7 +19,9 @@ const StudentLayout = () => {
     { path: '/student', label: 'Dashboard' },
     { path: '/student/profile', label: 'Profile' },
     { path: '/student/network', label: 'Network' },
-    { path: '/student/messages', label: 'Messages' } // Add this line
+    { path: '/student/messages', label: 'Messages' }, // Add this line
+    { path: '/student/resume', label: 'Resume Review' },
+    { path: '/student/resume-feedback', label: 'Resume Feedback' }
   ];
 
   return (

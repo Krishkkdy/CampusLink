@@ -27,7 +27,8 @@ const AlumniLayout = () => {
                   { path: '/alumni', label: 'Dashboard' },
                   { path: '/alumni/view-events', label: 'Events' },
                   { path: '/alumni/messages', label: 'Message' },
-                  { path: '/alumni/view-alumni-profiles', label: 'Network' }
+                  { path: '/alumni/view-alumni-profiles', label: 'Network' },
+                  { path: '/alumni/resume-review', label: 'Resume Review' }  // Add this line
                 ].map(({ path, label }) => (
                   <Link
                     key={path}
