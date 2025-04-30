@@ -11,6 +11,7 @@ import messageRoutes from './routes/messageRoutes.js';
 import Message from './models/Message.js';
 import User from './models/User.js';  // Add User model import
 import resumeRoutes from './routes/resumeRoutes.js';
+import notificationRoutes from './routes/notificationRoutes.js';
 
 dotenv.config();
 
@@ -154,6 +155,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/resumes', resumeRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

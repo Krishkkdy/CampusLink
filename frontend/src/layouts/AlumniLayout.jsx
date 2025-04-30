@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import NotificationBell from '../components/NotificationBell';
 
 const AlumniLayout = () => {
   const { user, setUser } = useContext(AuthContext); // Add setUser from context
@@ -45,7 +46,8 @@ const AlumniLayout = () => {
               </div>
             </div>
             
-            <div className="flex items-center">
+            <div className="flex items-center space-x-4">
+              <NotificationBell userId={user._id} />
               <div className="relative">
                 <button
                   onClick={() => setShowProfileMenu(!showProfileMenu)}
