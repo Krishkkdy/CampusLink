@@ -24,8 +24,12 @@ import AlumniDashboard from "./pages/alumni/AlumniDashboard";
 import ViewEvents from "./pages/alumni/ViewEvents";
 import ViewAlumniProfiles from "./pages/alumni/ViewAlumniProfiles";
 import AlumniProfile from "./pages/alumni/AlumniProfile";
+import JobPostingDetail from "./pages/alumni/JobPostingDetail";
 import StudentDashboard from "./pages/student/StudentDashboard";
 import StudentProfile from "./pages/student/StudentProfile";
+import ViewStudentProfile from "./pages/student/ViewStudentProfile";
+import JobListings from "./pages/student/JobListings";
+import JobDetail from "./pages/student/JobDetail";
 import Login from "./pages/Login";
 import AddStudent from './pages/admin/AddStudent';
 import StudentList from './pages/admin/StudentList';
@@ -82,16 +86,21 @@ function App() {
             <Route path="/alumni/view-alumni-profiles" element={<ViewAlumniProfiles />} />
             <Route path="/alumni/messages" element={<Messages />} />
             <Route path="/alumni/resume-review" element={<ResumeReview />} />
+            <Route path="/alumni/job-postings/:jobId" element={<JobPostingDetail />} />
+            <Route path="/alumni/view-student-profile/:studentId" element={<ViewStudentProfile />} />
           </Route>
 
           {/* Student Routes */}
           <Route element={<StudentLayout />}>
             <Route path="/student" element={<StudentDashboard />} />
+            <Route path="/student/dashboard" element={<StudentDashboard />} />
             <Route path="/student/profile" element={<StudentProfile />} />
             <Route path="/student/network" element={<ViewNetwork />} />
             <Route path="/student/messages" element={<Messages />} />
             <Route path="/student/resume" element={<StudentResume />} />
             <Route path="/student/resume-feedback" element={<ViewResumeFeedback />} />
+            <Route path="/student/jobs" element={<JobListings />} />
+            <Route path="/student/jobs/:jobId" element={<JobDetail />} />
           </Route>
         </Routes>
       </Router>
