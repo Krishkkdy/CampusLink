@@ -251,9 +251,7 @@ const FacultyDashboard = () => {
                 <p className="text-gray-600">{selectedEvent.description}</p>
               </div>
               <div className="mt-6 border-t pt-4">
-                <h4 className="font-semibold mb-4">
-                  Interested Alumni ({selectedEvent.interestedUsers?.length || 0})
-                </h4>
+                <h4 className="font-semibold mb-4">Interested Alumni ({selectedEvent.interestedUsers?.length || 0})</h4>
                 <div className="max-h-60 overflow-y-auto">
                   {selectedEvent.interestedUsers?.map((alumnus) => (
                     <div 
@@ -318,36 +316,9 @@ const FacultyDashboard = () => {
               <div className="mt-6 border-t pt-4">
                 <h4 className="font-semibold mb-4">Student Registration</h4>
                 <div className="flex items-center gap-4 mb-4">
-                  <input
-                    type="number"
-                    min="0"
-                    placeholder="Number of seats"
-                    className="p-2 border rounded"
-                    value={selectedEvent.studentSeats || 0}
-                    onChange={async (e) => {
-                      const seats = parseInt(e.target.value);
-                      try {
-                        const response = await fetch(`${import.meta.env.VITE_API_URL}/events/${selectedEvent._id}`, {
-                          method: 'PUT',
-                          headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${localStorage.getItem('userToken')}`
-                          },
-                          body: JSON.stringify({ 
-                            studentSeats: seats,
-                            isSharedWithStudents: true // Add this line
-                          })
-                        });
-                        if (response.ok) {
-                          await fetchEvents();
-                          alert('Event details shared with students successfully!');
-                        }
-                      } catch (error) {
-                        console.error('Error updating event:', error);
-                      }
-                    }}
-                  />
-                  <span className="text-gray-600">Available Seats</span>
+                  <div className="text-gray-600">
+                    <span className="font-medium">Available Seats:</span> {selectedEvent.studentSeats || 0}
+                  </div>
                   <button
                     onClick={async () => {
                       try {

@@ -370,6 +370,17 @@ export const handleStudentRegistration = async (req, res) => {
       return res.status(404).json({ message: 'Event not found' });
     }
 
+    // Check if student is already registered
+    const existingRegistration = event.registeredStudents.find(
+      reg => reg.userId.toString() === studentId
+    );
+
+    if (existingRegistration) {
+      return res.status(400).json({ 
+        message: 'Student is already registered for this event'
+      });
+    }
+
     // Check if seats are available
     const registeredCount = event.registeredStudents.filter(r => r.status === 'approved').length;
     if (registeredCount >= event.studentSeats) {
