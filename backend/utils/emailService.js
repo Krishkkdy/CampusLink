@@ -50,3 +50,21 @@ export const sendResetPasswordEmail = async (email, resetUrl) => {
     console.error('Error sending reset password email:', error);
   }
 };
+
+export const sendGenericEmail = async (email, subject, message) => {
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: subject,
+    html: message
+  };
+  
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`Email sent to ${email}`);
+    return true;
+  } catch (error) {
+    console.error('Error sending email:', error);
+    return false;
+  }
+};

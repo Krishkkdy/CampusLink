@@ -10,8 +10,12 @@ const AddAlumni = () => {
     email: '',
     password: '',
     profile: {
-      department: '',
-      graduationYear: ''
+      basicInfo: {
+        department: ''
+      },
+      academic: {
+        graduationYear: ''
+      }
     }
   });
 
@@ -24,19 +28,7 @@ const AddAlumni = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('userToken')}`
         },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-          profile: {
-            basicInfo: {
-              department: formData.profile.department
-            },
-            academic: {
-              graduationYear: formData.profile.graduationYear
-            }
-          }
-        })
+        body: JSON.stringify(formData)
       });
 
       if (!response.ok) {
@@ -62,19 +54,41 @@ const AddAlumni = () => {
       const worksheet = workbook.Sheets[workbook.SheetNames[0]];
       const jsonData = XLSX.utils.sheet_to_json(worksheet);
 
+      if (jsonData.length === 0) {
+        alert('No data found in the Excel file. Please make sure you have data in the correct format.');
+        return;
+      }
+
+      const requiredFields = ['name', 'email', 'password'];
+      const missingFields = [];
+
+      // Check for required fields in the first row
+      for (const field of requiredFields) {
+        if (!jsonData[0].hasOwnProperty(field)) {
+          missingFields.push(field);
+        }
+      }
+
+      if (missingFields.length > 0) {
+        alert(`The Excel file is missing required columns: ${missingFields.join(', ')}. Please use the template.`);
+        return;
+      }
+
       const formattedAlumni = jsonData.map(alumni => ({
-        name: alumni.name,
-        email: alumni.email,
+        name: alumni.name?.trim(),
+        email: alumni.email?.trim(),
         password: alumni.password,
         profile: {
           basicInfo: {
-            department: alumni.department || ''
+            department: alumni.department?.trim() || ''
           },
           academic: {
-            graduationYear: alumni.graduationYear || ''
+            graduationYear: alumni.graduationYear?.toString() || ''
           }
         }
       }));
+
+      console.log('Sending alumni data:', { alumni: formattedAlumni });
 
       const response = await fetch(`${import.meta.env.VITE_API_URL}/admin/add-alumni-bulk`, {
         method: 'POST',
@@ -86,10 +100,19 @@ const AddAlumni = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to add alumni');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to add alumni');
       }
 
-      alert('Alumni added successfully!');
+      const result = await response.json();
+      console.log('Bulk upload result:', result);
+      
+      if (result.results && result.results.failed && result.results.failed.length > 0) {
+        alert(`Added ${result.results.success.length} alumni. Failed to add ${result.results.failed.length} alumni. Check console for details.`);
+      } else {
+        alert('All alumni added successfully!');
+      }
+      
       navigate('/alumni-list');
     } catch (error) {
       console.error('Error:', error);
@@ -128,7 +151,7 @@ const AddAlumni = () => {
                 <input
                   type="text"
                   required
-                  className="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500"
+                  className="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
                 />
@@ -138,7 +161,7 @@ const AddAlumni = () => {
                 <input
                   type="email"
                   required
-                  className="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500"
+                  className="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
                 />
@@ -148,7 +171,7 @@ const AddAlumni = () => {
                 <input
                   type="password"
                   required
-                  className="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500"
+                  className="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
                   value={formData.password}
                   onChange={(e) => setFormData({...formData, password: e.target.value})}
                 />
@@ -158,11 +181,17 @@ const AddAlumni = () => {
                 <input
                   type="text"
                   required
-                  className="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500"
-                  value={formData.profile.department}
+                  className="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  value={formData.profile.basicInfo.department}
                   onChange={(e) => setFormData({
                     ...formData,
-                    profile: { ...formData.profile, department: e.target.value }
+                    profile: {
+                      ...formData.profile,
+                      basicInfo: {
+                        ...formData.profile.basicInfo,
+                        department: e.target.value
+                      }
+                    }
                   })}
                 />
               </div>
@@ -171,11 +200,17 @@ const AddAlumni = () => {
                 <input
                   type="text"
                   required
-                  className="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500"
-                  value={formData.profile.graduationYear}
+                  className="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  value={formData.profile.academic.graduationYear}
                   onChange={(e) => setFormData({
                     ...formData,
-                    profile: { ...formData.profile, graduationYear: e.target.value }
+                    profile: {
+                      ...formData.profile,
+                      academic: {
+                        ...formData.profile.academic,
+                        graduationYear: e.target.value
+                      }
+                    }
                   })}
                 />
               </div>
@@ -213,7 +248,7 @@ const AddAlumni = () => {
                 </div>
                 
                 <div className="space-y-6">
-                  <div className="bg-blue-50  p-6 rounded-xl border border-pink-100">
+                  <div className="bg-blue-50 p-6 rounded-xl border border-blue-100">
                     <p className="text-sm text-gray-600">
                       Upload an Excel file (.xlsx) containing alumni information. Make sure the file follows the required format.
                     </p>
@@ -224,7 +259,7 @@ const AddAlumni = () => {
                       type="file"
                       accept=".xlsx"
                       onChange={handleFileUpload}
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all hover:bg-gray-50"
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all hover:bg-gray-50"
                     />
                   </div>
 
@@ -232,7 +267,7 @@ const AddAlumni = () => {
                     <a 
                       href="/templates/alumni-template.xlsx" 
                       download
-                      className="inline-flex items-center text-blue-600  font-medium"
+                      className="inline-flex items-center text-blue-600 font-medium"
                     >
                       <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />

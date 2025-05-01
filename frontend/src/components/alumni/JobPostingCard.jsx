@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import JobDetailsModal from './JobDetailsModal';
 import JobPostingForm from './JobPostingForm';
+import ApplicantsList from './ApplicantsList';
 
 const JobPostingCard = ({ job, onRefresh }) => {
   const navigate = useNavigate();
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showApplicantsModal, setShowApplicantsModal] = useState(false);
 
   const handleToggleStatus = async () => {
     try {
@@ -125,8 +127,21 @@ const JobPostingCard = ({ job, onRefresh }) => {
           <p className="text-gray-600 mb-4 line-clamp-2">{job.description}</p>
 
           <div className="flex justify-between items-center border-t pt-4">
-            <div className="text-sm text-gray-500">
-              <span className="font-medium">{job.applicants?.length || 0}</span> applicant(s)
+            <div className="flex items-center gap-2">
+              <div className="text-sm text-gray-500">
+                <span className="font-medium">{job.applicants?.length || 0}</span> applicant(s)
+              </div>
+              {(job.applicants?.length > 0) && (
+                <button
+                  onClick={() => setShowApplicantsModal(true)}
+                  className="px-3 py-1 bg-indigo-100 text-indigo-800 text-sm font-medium rounded-md hover:bg-indigo-200 transition-colors flex items-center gap-1"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                  View Applicants
+                </button>
+              )}
             </div>
             <div className="flex gap-2">
               <button
@@ -182,6 +197,14 @@ const JobPostingCard = ({ job, onRefresh }) => {
             </div>
           </div>
         </div>
+      )}
+
+      {showApplicantsModal && (
+        <ApplicantsList 
+          jobId={job._id} 
+          jobTitle={job.title}
+          onClose={() => setShowApplicantsModal(false)} 
+        />
       )}
     </>
   );

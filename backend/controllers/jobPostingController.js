@@ -53,8 +53,16 @@ export const getAllJobPostings = async (req, res) => {
 export const getAlumniJobPostings = async (req, res) => {
   try {
     const userId = req.user.id;
-    const jobPostings = await JobPosting.find({ postedBy: userId })
-      .sort({ createdAt: -1 });
+    const { populate } = req.query;
+    
+    let query = JobPosting.find({ postedBy: userId }).sort({ createdAt: -1 });
+    
+    // Populate applicant data if populate=true
+    if (populate === 'true') {
+      query = query.populate('applicants.student', 'name email');
+    }
+    
+    const jobPostings = await query;
     
     res.json(jobPostings);
   } catch (error) {

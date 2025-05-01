@@ -14,6 +14,7 @@ import {
   forgotPassword,
   resetPassword
 } from '../controllers/userController.js';
+import { sendMail } from '../controllers/adminController.js';
 
 
 const router = express.Router();
@@ -32,5 +33,8 @@ router.post('/reset-password/:token', resetPassword);
 // Add student route
 router.get('/students', protect, getAllStudents);
 router.get('/faculty', protect, getAllFaculty); // Add this line
+
+// Add admin functionality for users route (admin middleware is applied in the controller)
+router.post('/send-email', protect, sendMail);
 
 export default router;

@@ -19,7 +19,7 @@ const JobPostingsPage = () => {
 
   const fetchJobPostings = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/jobs/my-postings`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/jobs/my-postings?populate=true`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('userToken')}`
         }

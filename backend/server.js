@@ -13,6 +13,7 @@ import User from './models/User.js';  // Add User model import
 import resumeRoutes from './routes/resumeRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
 import jobPostingRoutes from './routes/jobPostingRoutes.js';
+import studentRoutes from './routes/studentRoutes.js';
 
 dotenv.config();
 
@@ -158,6 +159,7 @@ app.use('/api/messages', messageRoutes);
 app.use('/api/resumes', resumeRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/jobs', jobPostingRoutes);
+app.use('/api/students', studentRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

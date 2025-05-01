@@ -20,11 +20,16 @@ const SendEmails = () => {
       });
       
       if (res.ok) {
-        alert('Emails sent successfully!');
+        const data = await res.json();
+        alert(data.message || 'Emails sent successfully!');
         setEmailData({ subject: '', body: '', recipients: 'all' });
+      } else {
+        const errorData = await res.json();
+        alert(`Error: ${errorData.message || 'Failed to send emails'}`);
       }
     } catch (error) {
       console.error('Error sending emails:', error);
+      alert('Failed to send emails. Please try again later.');
     }
   };
 

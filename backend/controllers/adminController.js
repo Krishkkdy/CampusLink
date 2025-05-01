@@ -1,5 +1,5 @@
 import User from '../models/User.js';
-import { sendWelcomeEmail } from '../utils/emailService.js';
+import { sendWelcomeEmail, sendGenericEmail } from '../utils/emailService.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import Event from '../models/Event.js';
@@ -167,6 +167,70 @@ export const addStudentsBulk = async (req, res) => {
 
     res.status(201).json({
       message: 'Bulk student creation completed',
+      results
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Add bulk alumni
+export const addAlumniBulk = async (req, res) => {
+  try {
+    const { alumni } = req.body;
+    
+    // Validate input
+    if (!Array.isArray(alumni)) {
+      return res.status(400).json({ message: 'Invalid input format' });
+    }
+
+    // Validate required fields for each alumni
+    for (const alumniData of alumni) {
+      if (!alumniData.name || !alumniData.email || !alumniData.password) {
+        return res.status(400).json({ 
+          message: 'Missing required fields',
+          details: 'Each alumni record must include name, email, and password'
+        });
+      }
+    }
+
+    const results = {
+      success: [],
+      failed: []
+    };
+
+    for (const alumniData of alumni) {
+      try {
+        const alumniExists = await User.findOne({ email: alumniData.email });
+        if (alumniExists) {
+          results.failed.push({ email: alumniData.email, reason: 'Email already exists' });
+          continue;
+        }
+
+        const newAlumni = await User.create({
+          name: alumniData.name,
+          email: alumniData.email,
+          password: alumniData.password,
+          role: 'alumni',
+          profile: {
+            basicInfo: {
+              department: alumniData.profile?.basicInfo?.department || ''
+            },
+            academic: {
+              graduationYear: alumniData.profile?.academic?.graduationYear || ''
+            }
+          }
+        });
+
+        await sendWelcomeEmail(alumniData.email, alumniData.password, 'alumni');
+        results.success.push(alumniData.email);
+      } catch (error) {
+        results.failed.push({ email: alumniData.email || 'Unknown', reason: error.message });
+      }
+    }
+
+    res.status(201).json({
+      message: 'Bulk alumni creation completed',
       results
     });
   } catch (error) {
@@ -383,19 +447,41 @@ export const removeStudent = async (req, res) => {
 // Send mail
 export const sendMail = async (req, res) => {
   try {
-    const { subject, message, recipients } = req.body;
+    // Check if user is admin
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Not authorized. Admin access required.' });
+    }
+    
+    const { subject, body, recipients } = req.body;
     const emailList = await User.find(
       recipients === 'all' ? {} : { role: recipients }
     ).select('email');
 
-    await Promise.all(
+    if (emailList.length === 0) {
+      return res.status(404).json({ message: 'No recipients found with the selected criteria' });
+    }
+
+    const results = await Promise.all(
       emailList.map(user => 
-        sendWelcomeEmail(user.email, message, subject)
+        sendGenericEmail(user.email, subject, body)
       )
     );
 
-    res.json({ message: 'Emails sent successfully' });
+    // Check if any emails failed to send
+    const failedCount = results.filter(result => !result).length;
+    
+    if (failedCount > 0) {
+      return res.status(207).json({ 
+        message: `${emailList.length - failedCount} emails sent successfully, ${failedCount} failed.` 
+      });
+    }
+
+    res.status(200).json({ 
+      message: `${emailList.length} emails sent successfully`,
+      count: emailList.length
+    });
   } catch (error) {
+    console.error('Error sending emails:', error);
     res.status(500).json({ message: error.message });
   }
 };
