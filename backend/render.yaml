@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: my-nodejs-server
+    env: node
+    build:
+      dockerfile: Dockerfile
+    envVars:
+      - key: PORT
+        value: 5000
+      - key: MONGODB_URI
+        value: mongodb+srv://Krishkkdy:1234567890@cluster0.ic1ou.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+      - key: EMAIL_USER
+        value: harshhadiya03@gmail.com
+      - key: EMAIL_PASS
+        value: jfan jyay glnc sdvl
+      - key: JWT_SECRET
+        value: alumni_connect_secret_2024
+      - key: JWT_EXPIRES_IN
+        value: 30d
+      - key: FRONTEND_URL
+        value: http://localhost:5173
+    plan: free
