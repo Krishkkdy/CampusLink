@@ -7,6 +7,7 @@ const ViewNetwork = () => {
   const { user } = useContext(AuthContext);
   const [alumni, setAlumni] = useState([]);
   const [students, setStudents] = useState([]);
+  const [faculty, setFaculty] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedAlumnus, setSelectedAlumnus] = useState(null);
@@ -18,6 +19,7 @@ const ViewNetwork = () => {
   useEffect(() => {
     fetchAlumni();
     fetchStudents();
+    fetchFaculty();
     fetchConnections();
   }, [user]);
 
@@ -48,6 +50,20 @@ const ViewNetwork = () => {
       console.error('Error fetching students:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchFaculty = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/users/faculty`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('userToken')}`
+        }
+      });
+      const data = await response.json();
+      setFaculty(data);
+    } catch (error) {
+      console.error('Error fetching faculty:', error);
     }
   };
 
@@ -175,186 +191,251 @@ const ViewNetwork = () => {
   }
 
   return (
-    <div className="page-container space-y-8">
-      <div className="flex justify-between items-center">
-        <h2 className="page-title">My Network</h2>
-        {pendingRequests.length > 0 && (
-          <button 
-            onClick={() => document.getElementById('requestsSection').scrollIntoView({ behavior: 'smooth' })}
-            className="bg-blue-100 text-blue-800 px-4 py-2 rounded-full flex items-center space-x-2"
-          >
-            <span className="text-sm font-medium">Connection Requests</span>
-            <span className="bg-blue-200 text-blue-900 px-2 py-1 rounded-full text-xs">
-              {pendingRequests.length}
-            </span>
-          </button>
-        )}
-      </div>
+    <div className="min-h-screen bg-gray-50">
+      {/* Hero Section */}
+      <div className="bg-gradient-to-r from-blue-600 to-blue-800 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-white mb-8">
+            <h1 className="text-3xl font-bold">Professional Network</h1>
+            <p className="mt-2 text-blue-100">Connect and collaborate with alumni, students, and faculty members</p>
+          </div>
 
-      {pendingRequests.length > 0 && (
-        <div id="requestsSection" className="bg-blue-50 p-6 rounded-lg">
-          <h3 className="text-xl font-semibold mb-4 text-blue-900">
-            Connection Requests ({pendingRequests.length})
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {pendingRequests.map((user) => (
-              <div key={user._id} className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-                <div 
-                  className="flex items-center space-x-4 cursor-pointer mb-4"
-                  onClick={() => user.role === 'student' ? setSelectedStudent(user) : setSelectedAlumnus(user)}
-                >
-                  <img
-                    src={user.profile?.basicInfo?.avatar || `https://ui-avatars.com/api/?name=${user.name}`}
-                    alt={user.name}
-                    className="w-12 h-12 rounded-full"
-                  />
-                  <div className="flex-1">
-                    <h4 className="font-semibold">{user.name}</h4>
-                    <p className="text-sm text-gray-600">
-                      {user.role === 'student' ? 
-                        `Student - ${user.profile?.basicInfo?.department || 'Department not specified'}` :
-                        `${user.profile?.professional?.designation || 'Alumni'} ${user.profile?.professional?.currentCompany ? `at ${user.profile.professional.currentCompany}` : ''}`
-                      }
-                    </p>
-                  </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+              <div className="flex items-center">
+                <div className="p-3 bg-white/20 rounded-lg">
+                  <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
                 </div>
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => handleConnectionResponse(user._id, 'accepted')}
-                    className="flex-1 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-                  >
-                    Accept
-                  </button>
-                  <button
-                    onClick={() => handleConnectionResponse(user._id, 'rejected')}
-                    className="flex-1 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                  >
-                    Reject
-                  </button>
+                <div className="ml-4">
+                  <p className="text-sm text-blue-100">Connected Alumni</p>
+                  <p className="text-2xl font-bold">{alumni.length}</p>
                 </div>
               </div>
-            ))}
+            </div>
+            
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+              <div className="flex items-center">
+                <div className="p-3 bg-white/20 rounded-lg">
+                  <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm text-blue-100">Students</p>
+                  <p className="text-2xl font-bold">{students.length}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+              <div className="flex items-center">
+                <div className="p-3 bg-white/20 rounded-lg">
+                  <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm text-blue-100">Faculty Members</p>
+                  <p className="text-2xl font-bold">{faculty.length}</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      )}
-
-      <div className="flex space-x-4 border-b">
-        <button
-          className={`px-4 py-2 ${activeTab === 'alumni' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500'}`}
-          onClick={() => setActiveTab('alumni')}
-        >
-          Alumni
-        </button>
-        <button
-          className={`px-4 py-2 ${activeTab === 'students' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500'}`}
-          onClick={() => setActiveTab('students')}
-        >
-          Students
-        </button>
       </div>
 
-      <input
-        type="text"
-        placeholder="Search by name or department..."
-        className="w-full p-4 border rounded-lg"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {activeTab === 'alumni' ? (
-          filteredAlumni.map(alumnus => (
-            <div key={alumnus._id} className="card p-6">
-              <div className="flex items-start cursor-pointer" onClick={() => setSelectedAlumnus(alumnus)}>
-                <img
-                  src={alumnus.profile?.basicInfo?.avatar || `https://ui-avatars.com/api/?name=${alumnus.name}`}
-                  alt={alumnus.name}
-                  className="w-16 h-16 rounded-full"
-                />
-                <div className="ml-4 flex-1">
-                  <h3 className="font-bold text-lg">{alumnus.name}</h3>
-                  <p className="text-gray-600">{alumnus.profile?.basicInfo?.department}</p>
-                  <p className="text-gray-600">{alumnus.profile?.professional?.currentCompany}</p>
-                </div>
-              </div>
-              
-              <div className="mt-4 pt-4 border-t">
-                {!connections[alumnus._id] && (
-                  <button
-                    onClick={() => handleConnect(alumnus._id)}
-                    className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Connection Requests Section */}
+        {pendingRequests.length > 0 && (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Connection Requests <span className="text-blue-600">({pendingRequests.length})</span>
+              </h3>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {pendingRequests.map((user) => (
+                <div key={user._id} className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                  <div 
+                    className="flex items-center space-x-4 cursor-pointer mb-4"
+                    onClick={() => user.role === 'student' ? setSelectedStudent(user) : setSelectedAlumnus(user)}
                   >
-                    Connect
-                  </button>
-                )}
-                {connections[alumnus._id]?.status === 'accepted' && (
+                    <img
+                      src={user.profile?.basicInfo?.avatar || `https://ui-avatars.com/api/?name=${user.name}`}
+                      alt={user.name}
+                      className="w-12 h-12 rounded-full"
+                    />
+                    <div className="flex-1">
+                      <h4 className="font-semibold">{user.name}</h4>
+                      <p className="text-sm text-gray-600">
+                        {user.role === 'student' ? 
+                          `Student - ${user.profile?.basicInfo?.department || 'Department not specified'}` :
+                          `${user.profile?.professional?.designation || 'Alumni'} ${user.profile?.professional?.currentCompany ? `at ${user.profile.professional.currentCompany}` : ''}`
+                        }
+                      </p>
+                    </div>
+                  </div>
                   <div className="flex space-x-2">
-                    <button disabled className="flex-1 bg-green-100 text-green-600 px-4 py-2 rounded">
-                      Connected
+                    <button
+                      onClick={() => handleConnectionResponse(user._id, 'accepted')}
+                      className="flex-1 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                    >
+                      Accept
                     </button>
                     <button
-                      onClick={() => handleRemoveConnection(alumnus._id)}
-                      className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                      onClick={() => handleConnectionResponse(user._id, 'rejected')}
+                      className="flex-1 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
                     >
-                      Remove
+                      Reject
                     </button>
                   </div>
-                )}
-                {connections[alumnus._id]?.status === 'sent' && (
-                  <button disabled className="w-full bg-gray-100 text-gray-600 px-4 py-2 rounded">
-                    Request Sent
-                  </button>
-                )}
-              </div>
-            </div>
-          ))
-        ) : (
-          filteredStudents.map(student => (
-            <div key={student._id} className="card p-6">
-              <div className="flex items-start cursor-pointer" onClick={() => setSelectedStudent(student)}>
-                <img
-                  src={student.profile?.basicInfo?.avatar || `https://ui-avatars.com/api/?name=${student.name}`}
-                  alt={student.name}
-                  className="w-16 h-16 rounded-full"
-                />
-                <div className="ml-4 flex-1">
-                  <h3 className="font-bold text-lg">{student.name}</h3>
-                  <p className="text-gray-600">{student.profile?.basicInfo?.department}</p>
-                  <p className="text-gray-600">Semester: {student.profile?.basicInfo?.semester}</p>
                 </div>
-              </div>
-              
-              <div className="mt-4 pt-4 border-t">
-                {!connections[student._id] && (
-                  <button
-                    onClick={() => handleConnect(student._id)}
-                    className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                  >
-                    Connect
-                  </button>
-                )}
-                {connections[student._id]?.status === 'accepted' && (
-                  <div className="flex space-x-2">
-                    <button disabled className="flex-1 bg-green-100 text-green-600 px-4 py-2 rounded">
-                      Connected
-                    </button>
-                    <button
-                      onClick={() => handleRemoveConnection(student._id)}
-                      className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                )}
-                {connections[student._id]?.status === 'sent' && (
-                  <button disabled className="w-full bg-gray-100 text-gray-600 px-4 py-2 rounded">
-                    Request Sent
-                  </button>
-                )}
-              </div>
+              ))}
             </div>
-          ))
+          </div>
         )}
+
+        {/* Enhanced Search and Filters */}
+        <div className="mb-8">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search by name, department, or specialization..."
+              className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <svg 
+              className="w-6 h-6 text-gray-400 absolute left-4 top-1/2 transform -translate-y-1/2" 
+              fill="none" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+        </div>
+
+        {/* Network Tabs */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="border-b border-gray-200">
+            <div className="flex">
+              {['alumni', 'students', 'faculty'].map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`flex-1 px-6 py-4 text-sm font-medium text-center capitalize transition-colors
+                    ${activeTab === tab 
+                      ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50/50' 
+                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                    }`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="p-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {activeTab === 'alumni' ? (
+                filteredAlumni.map(alumnus => (
+                  <div key={alumnus._id} className="card p-6">
+                    <div className="flex items-start cursor-pointer" onClick={() => setSelectedAlumnus(alumnus)}>
+                      <img
+                        src={alumnus.profile?.basicInfo?.avatar || `https://ui-avatars.com/api/?name=${alumnus.name}`}
+                        alt={alumnus.name}
+                        className="w-16 h-16 rounded-full"
+                      />
+                      <div className="ml-4 flex-1">
+                        <h3 className="font-bold text-lg">{alumnus.name}</h3>
+                        <p className="text-gray-600">{alumnus.profile?.basicInfo?.department}</p>
+                        <p className="text-gray-600">{alumnus.profile?.professional?.currentCompany}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-4 pt-4 border-t">
+                      {!connections[alumnus._id] && (
+                        <button
+                          onClick={() => handleConnect(alumnus._id)}
+                          className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                        >
+                          Connect
+                        </button>
+                      )}
+                      {connections[alumnus._id]?.status === 'accepted' && (
+                        <div className="flex space-x-2">
+                          <button disabled className="flex-1 bg-green-100 text-green-600 px-4 py-2 rounded">
+                            Connected
+                          </button>
+                          <button
+                            onClick={() => handleRemoveConnection(alumnus._id)}
+                            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      )}
+                      {connections[alumnus._id]?.status === 'sent' && (
+                        <button disabled className="w-full bg-gray-100 text-gray-600 px-4 py-2 rounded">
+                          Request Sent
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))
+              ) : (
+                filteredStudents.map(student => (
+                  <div key={student._id} className="card p-6">
+                    <div className="flex items-start cursor-pointer" onClick={() => setSelectedStudent(student)}>
+                      <img
+                        src={student.profile?.basicInfo?.avatar || `https://ui-avatars.com/api/?name=${student.name}`}
+                        alt={student.name}
+                        className="w-16 h-16 rounded-full"
+                      />
+                      <div className="ml-4 flex-1">
+                        <h3 className="font-bold text-lg">{student.name}</h3>
+                        <p className="text-gray-600">{student.profile?.basicInfo?.department}</p>
+                        <p className="text-gray-600">Semester: {student.profile?.basicInfo?.semester}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-4 pt-4 border-t">
+                      {!connections[student._id] && (
+                        <button
+                          onClick={() => handleConnect(student._id)}
+                          className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                        >
+                          Connect
+                        </button>
+                      )}
+                      {connections[student._id]?.status === 'accepted' && (
+                        <div className="flex space-x-2">
+                          <button disabled className="flex-1 bg-green-100 text-green-600 px-4 py-2 rounded">
+                            Connected
+                          </button>
+                          <button
+                            onClick={() => handleRemoveConnection(student._id)}
+                            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      )}
+                      {connections[student._id]?.status === 'sent' && (
+                        <button disabled className="w-full bg-gray-100 text-gray-600 px-4 py-2 rounded">
+                          Request Sent
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
       </div>
 
       {selectedAlumnus && (

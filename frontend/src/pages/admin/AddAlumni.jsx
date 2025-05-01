@@ -4,6 +4,7 @@ import * as XLSX from 'xlsx';
 
 const AddAlumni = () => {
   const navigate = useNavigate();
+  const [showBulkUploadModal, setShowBulkUploadModal] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -97,106 +98,155 @@ const AddAlumni = () => {
   };
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Add New Alumni</h2>
-        <button
-          onClick={() => navigate('/alumni-list')}
-          className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
-        >
-          Back to List
-        </button>
-      </div>
-
-      {/* Bulk Upload Section */}
-      <div className="mb-8 bg-white p-6 rounded-lg shadow-md">
-        <h3 className="text-xl font-semibold mb-4">Bulk Upload Alumni</h3>
-        <div className="space-y-4">
-          <p className="text-sm text-gray-600">
-            Upload an Excel file (.xlsx) with columns: name, email, password, department, graduationYear
-          </p>
-          <div className="flex items-center space-x-4">
-            <input
-              type="file"
-              accept=".xlsx"
-              onChange={handleFileUpload}
-              className="block w-full text-sm text-gray-500
-                file:mr-4 file:py-2 file:px-4
-                file:rounded-full file:border-0
-                file:text-sm file:font-semibold
-                file:bg-blue-50 file:text-blue-700
-                hover:file:bg-blue-100"
-            />
-            <a 
-              href="/templates/alumni-template.xlsx" 
-              download="alumni-template.xlsx"
-              className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+    <div className="min-h-screen bg-gray-50/90 p-6">
+      <div className="max-w-4xl mx-auto space-y-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-800">
+            Add New Alumni
+          </h1>
+          <div className="flex gap-4">
+            <button
+              onClick={() => navigate('/alumni-list')}
+              className="flex items-center px-4 py-2 text-gray-700 bg-white rounded-lg shadow hover:bg-gray-50"
             >
-              Download Template
-            </a>
+              Back to List
+            </button>
+            <button
+              onClick={() => setShowBulkUploadModal(true)}
+              className="flex items-center px-4 py-2 text-white bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg shadow hover:opacity-90"
+            >
+              Bulk Upload
+            </button>
           </div>
         </div>
-      </div>
 
-      {/* Single Alumni Form */}
-      <form onSubmit={handleSubmit} className="max-w-lg mb-8 bg-white p-6 rounded-lg shadow-md space-y-4">
-        <h3 className="text-xl font-semibold mb-4">Add Single Alumni</h3>
-        <input
-          type="text"
-          placeholder="Full Name"
-          className="w-full p-2 border rounded"
-          value={formData.name}
-          onChange={(e) => setFormData({...formData, name: e.target.value})}
-          required
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          className="w-full p-2 border rounded"
-          value={formData.email}
-          onChange={(e) => setFormData({...formData, email: e.target.value})}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          className="w-full p-2 border rounded"
-          value={formData.password}
-          onChange={(e) => setFormData({...formData, password: e.target.value})}
-          required
-        />
-        <input
-          type="text"  
-          placeholder="Department"
-          className="w-full p-2 border rounded"
-          value={formData.profile.department}
-          onChange={(e) => setFormData({
-            ...formData,
-            profile: { ...formData.profile, department: e.target.value }
-          })}
-          required
-        />
-        <input
-          type="text"
-          placeholder="Graduation Year"
-          className="w-full p-2 border rounded"
-          value={formData.profile.graduationYear}
-          onChange={(e) => setFormData({
-            ...formData,
-            profile: {
-              ...formData.profile,
-              graduationYear: e.target.value
-            }
-          })}
-          required
-        />
-        <button
-          type="submit" 
-          className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-        >
-          Add Alumni
-        </button>
-      </form>
+        <div className="bg-white rounded-xl shadow-md p-8">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Full Name</label>
+                <input
+                  type="text"
+                  required
+                  className="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500"
+                  value={formData.name}
+                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Email</label>
+                <input
+                  type="email"
+                  required
+                  className="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500"
+                  value={formData.email}
+                  onChange={(e) => setFormData({...formData, email: e.target.value})}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Password</label>
+                <input
+                  type="password"
+                  required
+                  className="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500"
+                  value={formData.password}
+                  onChange={(e) => setFormData({...formData, password: e.target.value})}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Department</label>
+                <input
+                  type="text"
+                  required
+                  className="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500"
+                  value={formData.profile.department}
+                  onChange={(e) => setFormData({
+                    ...formData,
+                    profile: { ...formData.profile, department: e.target.value }
+                  })}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Graduation Year</label>
+                <input
+                  type="text"
+                  required
+                  className="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500"
+                  value={formData.profile.graduationYear}
+                  onChange={(e) => setFormData({
+                    ...formData,
+                    profile: { ...formData.profile, graduationYear: e.target.value }
+                  })}
+                />
+              </div>
+            </div>
+            <button
+              type="submit"
+              className="w-full py-3 text-white bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg hover:opacity-90"
+            >
+              Add Alumni
+            </button>
+          </form>
+        </div>
+
+        {/* Bulk Upload Modal */}
+        {showBulkUploadModal && (
+          <div className="fixed inset-0 z-50">
+            {/* Backdrop with blur */}
+            <div className="absolute inset-0 bg-gray-900/50 backdrop-blur-sm"></div>
+            
+            {/* Modal Content */}
+            <div className="relative h-full flex items-center justify-center p-4">
+              <div className="bg-white rounded-2xl shadow-2xl max-w-xl w-full p-8 transform transition-all animate-fade-in">
+                <div className="flex justify-between items-center mb-8">
+                  <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-800">
+                    Bulk Upload Alumni
+                  </h3>
+                  <button 
+                    onClick={() => setShowBulkUploadModal(false)}
+                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                
+                <div className="space-y-6">
+                  <div className="bg-blue-50  p-6 rounded-xl border border-pink-100">
+                    <p className="text-sm text-gray-600">
+                      Upload an Excel file (.xlsx) containing alumni information. Make sure the file follows the required format.
+                    </p>
+                  </div>
+                  
+                  <div className="relative">
+                    <input
+                      type="file"
+                      accept=".xlsx"
+                      onChange={handleFileUpload}
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all hover:bg-gray-50"
+                    />
+                  </div>
+
+                  <div className="flex justify-between items-center pt-4 border-t">
+                    <a 
+                      href="/templates/alumni-template.xlsx" 
+                      download
+                      className="inline-flex items-center text-blue-600  font-medium"
+                    >
+                      <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                      </svg>
+                      Download Template
+                    </a>
+                   
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

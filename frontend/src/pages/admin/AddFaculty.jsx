@@ -25,7 +25,7 @@ const AddFaculty = () => {
           email: formData.email,
           password: formData.password,
           department: formData.department,
-          designation: formData.designation // Send designation in request
+          designation: formData.designation
         }),
       });
 
@@ -35,7 +35,7 @@ const AddFaculty = () => {
       }
 
       alert('Faculty added successfully!');
-      navigate('/faculty-list'); // Changed from '/manage-faculty' to '/faculty-list'
+      navigate('/faculty-list');
     } catch (error) {
       console.error('Error:', error);
       alert(`Error adding faculty: ${error.message}`);
@@ -43,65 +43,85 @@ const AddFaculty = () => {
   };
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Add New Faculty</h2>
-        <button
-          onClick={() => navigate('/faculty-list')}
-          className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
-        >
-          Back to List
-        </button>
-      </div>
+    <div className="min-h-screen bg-gray-50/90 p-6">
+      <div className="max-w-4xl mx-auto space-y-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-800">
+            Add New Faculty
+          </h1>
+          <div className="flex gap-4">
+            <button
+              onClick={() => navigate('/faculty-list')}
+              className="flex items-center px-4 py-2 text-gray-700 bg-white rounded-lg shadow hover:bg-gray-50"
+            >
+              Back to List
+            </button>
+          </div>
+        </div>
 
-      <form onSubmit={handleSubmit} className="max-w-lg space-y-4">
-        <input
-          type="text"
-          placeholder="Full Name"
-          className="w-full p-2 border rounded"
-          value={formData.name}
-          onChange={(e) => setFormData({...formData, name: e.target.value})}
-          required
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          className="w-full p-2 border rounded"
-          value={formData.email}
-          onChange={(e) => setFormData({...formData, email: e.target.value})}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          className="w-full p-2 border rounded"
-          value={formData.password}
-          onChange={(e) => setFormData({...formData, password: e.target.value})}
-          required
-        />
-        <input
-          type="text"
-          placeholder="Department"
-          className="w-full p-2 border rounded"
-          value={formData.department}
-          onChange={(e) => setFormData({...formData, department: e.target.value})}
-          required
-        />
-        <input
-          type="text"
-          placeholder="Designation"
-          className="w-full p-2 border rounded"
-          value={formData.designation}
-          onChange={(e) => setFormData({...formData, designation: e.target.value})}
-          required
-        />
-        <button
-          type="submit"
-          className="w-full bg-green-500 text-white p-2 rounded hover:bg-green-600"
-        >
-          Add Faculty
-        </button>
-      </form>
+        <div className="bg-white rounded-xl shadow-md p-8">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Full Name</label>
+                <input
+                  type="text"
+                  required
+                  className="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
+                  value={formData.name}
+                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Email</label>
+                <input
+                  type="email"
+                  required
+                  className="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
+                  value={formData.email}
+                  onChange={(e) => setFormData({...formData, email: e.target.value})}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Password</label>
+                <input
+                  type="password"
+                  required
+                  className="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
+                  value={formData.password}
+                  onChange={(e) => setFormData({...formData, password: e.target.value})}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Department</label>
+                <input
+                  type="text"
+                  required
+                  className="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
+                  value={formData.department}
+                  onChange={(e) => setFormData({...formData, department: e.target.value})}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Designation</label>
+                <input
+                  type="text"
+                  required
+                  className="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
+                  value={formData.designation}
+                  onChange={(e) => setFormData({...formData, designation: e.target.value})}
+                />
+              </div>
+            </div>
+            <button
+              type="submit"
+              className="w-full py-3 text-white bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg hover:opacity-90"
+            >
+              Add Faculty
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
   );
 };

@@ -25,6 +25,7 @@ import ViewEvents from "./pages/alumni/ViewEvents";
 import ViewAlumniProfiles from "./pages/alumni/ViewAlumniProfiles";
 import AlumniProfile from "./pages/alumni/AlumniProfile";
 import JobPostingDetail from "./pages/alumni/JobPostingDetail";
+import JobPostingsPage from './pages/alumni/JobPostingsPage';
 import StudentDashboard from "./pages/student/StudentDashboard";
 import StudentProfile from "./pages/student/StudentProfile";
 import ViewStudentProfile from "./pages/student/ViewStudentProfile";
@@ -87,6 +88,7 @@ function App() {
             <Route path="/alumni/messages" element={<Messages />} />
             <Route path="/alumni/resume-review" element={<ResumeReview />} />
             <Route path="/alumni/job-postings/:jobId" element={<JobPostingDetail />} />
+            <Route path="/alumni/job-postings" element={<JobPostingsPage />} />
             <Route path="/alumni/view-student-profile/:studentId" element={<ViewStudentProfile />} />
           </Route>
 

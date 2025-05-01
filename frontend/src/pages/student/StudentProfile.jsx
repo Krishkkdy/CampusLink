@@ -46,7 +46,6 @@ const StudentProfile = () => {
         const data = await response.json();
         console.log('Fetched profile data:', data);
 
-        // Check if profile exists in response
         if (data && data.profile) {
           setProfile({
             basicInfo: {
@@ -95,7 +94,6 @@ const StudentProfile = () => {
       
       if (res.ok) {
         setIsEditing(false);
-        // Refresh the profile data after successful update
         const data = await res.json();
         setProfile(prev => ({
           ...prev,
@@ -108,162 +106,192 @@ const StudentProfile = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-        {/* Profile Header */}
-        <div className="bg-gradient-to-r from-green-600 to-green-800 p-6 text-white">
-          <div className="flex items-center space-x-4">
-            <img
-              src={profile.basicInfo.avatar || `https://ui-avatars.com/api/?name=${profile.basicInfo.name}`}
-              alt="Profile"
-              className="w-24 h-24 rounded-full border-4 border-white"
-            />
-            <div>
-              <h1 className="text-2xl font-bold">{profile.basicInfo.name}</h1>
-              <p>Student at {profile.basicInfo.department}</p>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+          {/* Profile Header */}
+          <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-8 text-white">
+            <div className="flex justify-between items-start">
+              <div className="flex items-center space-x-6">
+                <img
+                  src={profile.basicInfo.avatar || `https://ui-avatars.com/api/?name=${profile.basicInfo.name}`}
+                  alt="Profile"
+                  className="w-24 h-24 rounded-full border-4 border-white/20 shadow-lg"
+                />
+                <div>
+                  <h1 className="text-2xl font-bold">{profile.basicInfo.name}</h1>
+                  <p className="text-green-100 mt-1">
+                    {profile.basicInfo.department} • Semester {profile.basicInfo.semester}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsEditing(!isEditing)}
+                className={`px-4 py-2 rounded-lg transition-all duration-200 ${
+                  isEditing 
+                    ? 'bg-white/10 hover:bg-white/20 text-white' 
+                    : 'bg-white/10 hover:bg-white/20 text-white'
+                }`}
+              >
+                {isEditing ? 'Cancel Editing' : 'Edit Profile'}
+              </button>
             </div>
           </div>
-        </div>
 
-        {/* Profile Content */}
-        <div className="p-6">
-          <div className="flex justify-end mb-4">
-            <button
-              onClick={() => setIsEditing(!isEditing)}
-              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
-            >
-              {isEditing ? 'Cancel Editing' : 'Edit Profile'}
-            </button>
-          </div>
+          <div className="p-8">
+            <form onSubmit={handleSubmit} className="space-y-8">
+              {/* Basic Information */}
+              <section className="space-y-4">
+                <h2 className="text-xl font-semibold border-b pb-2 text-gray-800">
+                  Basic Information
+                </h2>
+                <div className="grid grid-cols-2 gap-6">
+                  {Object.entries(profile.basicInfo)
+                    .filter(([key]) => key !== 'avatar')
+                    .map(([key, value]) => (
+                      <div key={key} className="col-span-1">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          {key.charAt(0).toUpperCase() + key.slice(1)}
+                        </label>
+                        {isEditing ? (
+                          <input
+                            type="text"
+                            className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                            value={value}
+                            onChange={(e) => setProfile({
+                              ...profile,
+                              basicInfo: {...profile.basicInfo, [key]: e.target.value}
+                            })}
+                          />
+                        ) : (
+                          <p className="mt-1 text-gray-900">{value || 'Not provided'}</p>
+                        )}
+                      </div>
+                    ))}
+                </div>
+              </section>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Basic Information */}
-            <section className="space-y-4">
-              <h2 className="text-xl font-semibold border-b pb-2">Basic Information</h2>
-              <div className="grid grid-cols-2 gap-4">
-                {Object.entries(profile.basicInfo).map(([key, value]) => (
-                  <div key={key}>
-                    <label className="block text-sm font-medium text-gray-700">
-                      {key.charAt(0).toUpperCase() + key.slice(1)}
-                    </label>
-                    {isEditing ? (
-                      <input
-                        type={key === 'semester' ? 'number' : 'text'}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-                        value={value}
-                        onChange={(e) => setProfile({
-                          ...profile,
-                          basicInfo: {...profile.basicInfo, [key]: e.target.value}
-                        })}
-                      />
-                    ) : (
-                      <p className="mt-1 text-gray-900">{value}</p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            {/* Academic Information */}
-            <section className="space-y-4">
-              <h2 className="text-xl font-semibold border-b pb-2">Academic Information</h2>
-              <div className="grid grid-cols-2 gap-4">
-                {Object.entries(profile.academic).map(([key, value]) => (
-                  <div key={key} className={key === 'projects' ? 'col-span-2' : ''}>
-                    <label className="block text-sm font-medium text-gray-700">
-                      {key.charAt(0).toUpperCase() + key.slice(1)}
-                    </label>
-                    {isEditing ? (
-                      Array.isArray(value) ? (
-                        <textarea
-                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-                          value={value.join('\n')}
-                          onChange={(e) => setProfile({
-                            ...profile,
-                            academic: {
-                              ...profile.academic,
-                              [key]: e.target.value.split('\n').filter(item => item.trim())
-                            }
-                          })}
-                          rows={4}
-                          placeholder={`Enter ${key} (one per line)`}
-                        />
+              {/* Academic Information */}
+              <section className="space-y-4">
+                <h2 className="text-xl font-semibold border-b pb-2 text-gray-800">
+                  Academic Information
+                </h2>
+                <div className="grid grid-cols-2 gap-6">
+                  {Object.entries(profile.academic).map(([key, value]) => (
+                    <div key={key} className={key === 'projects' || key === 'skills' ? 'col-span-2' : ''}>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        {key.charAt(0).toUpperCase() + key.slice(1)}
+                      </label>
+                      {isEditing ? (
+                        Array.isArray(value) ? (
+                          <textarea
+                            className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                            value={value.join('\n')}
+                            onChange={(e) => setProfile({
+                              ...profile,
+                              academic: {
+                                ...profile.academic,
+                                [key]: e.target.value.split('\n').filter(item => item.trim())
+                              }
+                            })}
+                            rows={4}
+                            placeholder={`Enter ${key} (one per line)`}
+                          />
+                        ) : (
+                          <input
+                            type={key === 'cgpa' ? 'number' : 'text'}
+                            className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                            value={value}
+                            onChange={(e) => setProfile({
+                              ...profile,
+                              academic: {...profile.academic, [key]: e.target.value}
+                            })}
+                            step={key === 'cgpa' ? '0.01' : undefined}
+                          />
+                        )
                       ) : (
+                        Array.isArray(value) ? (
+                          <div className="mt-1">
+                            {value.length > 0 ? (
+                              key === 'skills' ? (
+                                <div className="flex flex-wrap gap-2">
+                                  {value.map((item, idx) => (
+                                    <span key={idx} className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-sm">
+                                      {item}
+                                    </span>
+                                  ))}
+                                </div>
+                              ) : (
+                                <ul className="list-disc pl-4 space-y-1">
+                                  {value.map((item, idx) => (
+                                    <li key={idx} className="text-gray-700">{item}</li>
+                                  ))}
+                                </ul>
+                              )
+                            ) : (
+                              <p className="text-gray-500 italic">No {key} listed</p>
+                            )}
+                          </div>
+                        ) : (
+                          <p className="mt-1 text-gray-900">{value || 'Not provided'}</p>
+                        )
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </section>
+
+              {/* Social Links */}
+              <section className="space-y-4">
+                <h2 className="text-xl font-semibold border-b pb-2 text-gray-800">
+                  Social Links
+                </h2>
+                <div className="grid grid-cols-2 gap-6">
+                  {Object.entries(profile.social).map(([key, value]) => (
+                    <div key={key} className="col-span-1">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        {key.charAt(0).toUpperCase() + key.slice(1)}
+                      </label>
+                      {isEditing ? (
                         <input
-                          type={key === 'cgpa' ? 'number' : 'text'}
-                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                          type="url"
+                          className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
                           value={value}
                           onChange={(e) => setProfile({
                             ...profile,
-                            academic: {...profile.academic, [key]: e.target.value}
+                            social: {...profile.social, [key]: e.target.value}
                           })}
-                          step={key === 'cgpa' ? '0.01' : undefined}
+                          placeholder={`Enter ${key} URL`}
                         />
-                      )
-                    ) : (
-                      Array.isArray(value) ? (
-                        <ul className="mt-1 list-disc list-inside text-gray-900">
-                          {value.map((item, idx) => (
-                            <li key={idx}>{item}</li>
-                          ))}
-                        </ul>
+                      ) : value ? (
+                        <a
+                          href={value}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-1 text-blue-600 hover:underline block"
+                        >
+                          {value}
+                        </a>
                       ) : (
-                        <p className="mt-1 text-gray-900">{value || 'Not provided'}</p>
-                      )
-                    )}
-                  </div>
-                ))}
-              </div>
-            </section>
+                        <p className="mt-1 text-gray-500 italic">Not provided</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </section>
 
-            {/* Social Links */}
-            <section className="space-y-4">
-              <h2 className="text-xl font-semibold border-b pb-2">Social Links</h2>
-              <div className="grid grid-cols-2 gap-4">
-                {Object.entries(profile.social).map(([key, value]) => (
-                  <div key={key}>
-                    <label className="block text-sm font-medium text-gray-700">
-                      {key.charAt(0).toUpperCase() + key.slice(1)}
-                    </label>
-                    {isEditing ? (
-                      <input
-                        type="url"
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-                        value={value}
-                        onChange={(e) => setProfile({
-                          ...profile,
-                          social: {...profile.social, [key]: e.target.value}
-                        })}
-                        placeholder={`Enter ${key} URL`}
-                      />
-                    ) : value ? (
-                      <a
-                        href={value}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="mt-1 text-blue-600 hover:underline"
-                      >
-                        {value}
-                      </a>
-                    ) : (
-                      <p className="mt-1 text-gray-500 italic">Not provided</p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            {isEditing && (
-              <div className="flex justify-end">
-                <button
-                  type="submit"
-                  className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700"
-                >
-                  Save Changes
-                </button>
-              </div>
-            )}
-          </form>
+              {isEditing && (
+                <div className="flex justify-end pt-6">
+                  <button
+                    type="submit"
+                    className="bg-gradient-to-r from-blue-600 to-blue-800 text-white px-6 py-2 rounded-lg hover:shadow-lg transition-all duration-200"
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              )}
+            </form>
+          </div>
         </div>
       </div>
     </div>

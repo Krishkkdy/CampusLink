@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 
@@ -6,8 +6,9 @@ const AdminLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { setUser } = useContext(AuthContext);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
 
-  const handleSignOut = () => {
+  const handleLogout = () => {
     // Clear user data and token
     setUser(null);
     localStorage.removeItem('userToken');
@@ -15,44 +16,50 @@ const AdminLayout = () => {
     navigate('/login');
   };
 
+  const navigationLinks = [
+    { path: '/admin', label: 'Dashboard' },
+    { path: '/alumni-list', label: 'Alumni List' },
+    { path: '/faculty-list', label: 'Faculty List' },
+    { path: '/student-list', label: 'Student List' },
+    { path: '/send-emails', label: 'Send Emails' }
+  ];
+
   return (
     <div>
-      <nav className="bg-gray-900 text-white">
+      <nav className="sticky top-0 z-50 bg-white shadow-md">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <Link to="/admin" className="text-xl font-bold">Admin Dashboard</Link>
-            </div>
-            <div className="flex items-center space-x-4">
-              {[
-                { path: '/admin', label: 'Dashboard' },
-                { path: '/alumni-list', label: 'Alumni List' },
-                { path: '/faculty-list', label: 'Faculty List' },
-                { path: '/student-list', label: 'Student List' },
-                { path: '/send-emails', label: 'Send Emails' }
-              ].map(({ path, label }) => (
+            <Link to="/admin" className="flex items-center">
+              <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-blue-800">
+                CampusLink
+              </span>
+            </Link>
+
+            <div className="flex items-center space-x-6">
+              {navigationLinks.map(({ path, label }) => (
                 <Link
                   key={path}
                   to={path}
-                  className={`px-3 py-2 rounded-md ${
-                    location.pathname === path 
-                      ? 'bg-gray-700 text-white' 
-                      : 'text-gray-300 hover:bg-gray-700'
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    location.pathname === path
+                      ? 'bg-blue-50 text-blue-600'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                   }`}
                 >
                   {label}
                 </Link>
               ))}
               <button
-                onClick={handleSignOut}
-                className="px-3 py-2 rounded-md text-gray-300 hover:bg-gray-700 hover:text-white"
+                onClick={handleLogout}
+                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-gray-50"
               >
-                Sign Out
+                Sign out
               </button>
             </div>
           </div>
         </div>
       </nav>
+
       <main>
         <Outlet />
       </main>

@@ -17,7 +17,6 @@ const StudentLayout = () => {
 
   const navigationLinks = [
     { path: '/student', label: 'Dashboard' },
-    { path: '/student/profile', label: 'Profile' },
     { path: '/student/jobs', label: 'Jobs' },
     { path: '/student/network', label: 'Network' },
     { path: '/student/messages', label: 'Messages' },
@@ -27,33 +26,34 @@ const StudentLayout = () => {
 
   return (
     <div>
-      <nav className="bg-gradient-to-r from-green-600 to-green-800 text-white">
+      <nav className="sticky top-0 z-50 bg-white shadow-md">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex justify-between h-16">
-            <div className="flex items-center space-x-8">
-              <Link to="/student" className="text-xl font-bold">Student Portal</Link>
-              <div className="flex space-x-4">
-                {navigationLinks.map(({ path, label }) => (
-                  <Link
-                    key={path}
-                    to={path}
-                    className={`px-3 py-2 rounded-md ${
-                      location.pathname === path 
-                        ? 'bg-green-700' 
-                        : 'hover:bg-green-700'
-                    }`}
-                  >
-                    {label}
-                  </Link>
-                ))}
-              </div>
-            </div>
-            
-            <div className="flex items-center">
+            <Link to="/student" className="flex items-center">
+              <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-blue-800">
+                CampusLink
+              </span>
+            </Link>
+
+            <div className="flex items-center space-x-6">
+              {navigationLinks.map(({ path, label }) => (
+                <Link
+                  key={path}
+                  to={path}
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    location.pathname === path
+                      ? 'bg-blue-50 text-blue-600'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  }`}
+                >
+                  {label}
+                </Link>
+              ))}
+              
               <div className="relative">
                 <button
                   onClick={() => setShowProfileMenu(!showProfileMenu)}
-                  className="flex items-center space-x-2 hover:bg-green-700 px-3 py-2 rounded-md"
+                  className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-gray-50"
                 >
                   <img
                     src={user?.avatar || `https://ui-avatars.com/api/?name=${user?.name}`}
@@ -64,12 +64,12 @@ const StudentLayout = () => {
                 </button>
                 
                 {showProfileMenu && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1">
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
                     <Link
                       to="/student/profile"
                       className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
                     >
-                      My Profile
+                      View Profile
                     </Link>
                     <button
                       onClick={handleSignOut}
@@ -84,6 +84,7 @@ const StudentLayout = () => {
           </div>
         </div>
       </nav>
+      
       <main>
         <Outlet />
       </main>

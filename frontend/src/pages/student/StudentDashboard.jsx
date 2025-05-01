@@ -5,6 +5,8 @@ const StudentDashboard = () => {
   const [events, setEvents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [recentJobs, setRecentJobs] = useState([]);
+  const [appliedJobs, setAppliedJobs] = useState(new Set());
+  const [registeredEvents, setRegisteredEvents] = useState(new Set());
   
   const fetchEvents = async () => {
     try {
@@ -15,17 +17,11 @@ const StudentDashboard = () => {
       });
       const data = await response.json();
       
-      // Filter events properly
       const studentEvents = data.filter(event => {
         const isRegistered = event.registeredStudents?.some(
           reg => reg.userId === localStorage.getItem('userId')
         );
         
-        // Show only events that:
-        // 1. Have student seats available
-        // 2. Are in the future
-        // 3. Have been shared with students
-        // 4. Include both registered and unregistered events
         return event.studentSeats > 0 && 
                new Date(event.date) > new Date() &&
                event.isSharedWithStudents === true;
@@ -50,13 +46,25 @@ const StudentDashboard = () => {
       }
       
       const data = await response.json();
-      // Sort by creation date (newest first) and take only 3 most recent
       const sortedJobs = data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 3);
       setRecentJobs(sortedJobs);
     } catch (error) {
       console.error('Error fetching recent jobs:', error);
     }
   };
+
+  useEffect(() => {
+    // Load applied jobs and registered events from localStorage on mount
+    const savedAppliedJobs = localStorage.getItem('appliedJobs');
+    const savedRegisteredEvents = localStorage.getItem('registeredEvents');
+    
+    if (savedAppliedJobs) {
+      setAppliedJobs(new Set(JSON.parse(savedAppliedJobs)));
+    }
+    if (savedRegisteredEvents) {
+      setRegisteredEvents(new Set(JSON.parse(savedRegisteredEvents)));
+    }
+  }, []);
 
   const handleRegister = async (eventId) => {
     try {
@@ -68,7 +76,7 @@ const StudentDashboard = () => {
         },
         body: JSON.stringify({ 
           studentId: localStorage.getItem('userId'),
-          status: 'approved' // Changed from 'pending' to 'approved'
+          status: 'approved'
         })
       });
 
@@ -77,8 +85,13 @@ const StudentDashboard = () => {
         throw new Error(error.message || 'Failed to register for event');
       }
 
+      // Update local state and persist to localStorage
+      const newRegisteredEvents = new Set([...registeredEvents, eventId]);
+      setRegisteredEvents(newRegisteredEvents);
+      localStorage.setItem('registeredEvents', JSON.stringify([...newRegisteredEvents]));
+
       await fetchEvents();
-      alert('Registration successful!'); // Removed "Awaiting faculty approval"
+      alert('Registration successful!');
     } catch (error) {
       console.error('Error registering for event:', error);
       alert(error.message || 'Failed to register for event');
@@ -99,6 +112,11 @@ const StudentDashboard = () => {
         throw new Error(errorData.message || 'Failed to apply for job');
       }
       
+      // Update local state and persist to localStorage
+      const newAppliedJobs = new Set([...appliedJobs, jobId]);
+      setAppliedJobs(newAppliedJobs);
+      localStorage.setItem('appliedJobs', JSON.stringify([...newAppliedJobs]));
+      
       await fetchRecentJobs();
       alert('Successfully applied for job!');
     } catch (error) {
@@ -113,104 +131,41 @@ const StudentDashboard = () => {
   }, []);
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Student Dashboard</h1>
-      
-      {/* Navigation Bar */}
-      <div className="bg-white rounded-lg shadow-md mb-8">
-        <div className="flex overflow-x-auto">
-          <Link 
-            to="/student/dashboard" 
-            className="px-4 py-3 font-medium text-blue-600 border-b-2 border-blue-600 whitespace-nowrap"
-          >
-            Dashboard
-          </Link>
-          <Link 
-            to="/student/jobs" 
-            className="px-4 py-3 font-medium text-gray-600 hover:text-blue-600 hover:border-b-2 hover:border-blue-600 whitespace-nowrap"
-          >
-            Job Listings
-          </Link>
-          <Link 
-            to="/student/profile" 
-            className="px-4 py-3 font-medium text-gray-600 hover:text-blue-600 hover:border-b-2 hover:border-blue-600 whitespace-nowrap"
-          >
-            Profile
-          </Link>
-          <Link 
-            to="/student/messages" 
-            className="px-4 py-3 font-medium text-gray-600 hover:text-blue-600 hover:border-b-2 hover:border-blue-600 whitespace-nowrap"
-          >
-            Messages
-          </Link>
-        </div>
-      </div>
-      
-      {/* Academic and Skills Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        {/* Academic Info Card */}
-        <div className="bg-white p-6 rounded-lg shadow-lg">
-          <h2 className="text-xl font-semibold mb-4">Academic Information</h2>
-          <div className="space-y-2">
-            <p>
-              <span className="font-medium">Department:</span> Computer Science
-            </p>
-            <p>
-              <span className="font-medium">Semester:</span> 6
-            </p>
-            <p>
-              <span className="font-medium">CGPA:</span> 8.5
-            </p>
-          </div>
-        </div>
-
-        {/* Skills Card */}
-        <div className="bg-white p-6 rounded-lg shadow-lg">
-          <h2 className="text-xl font-semibold mb-4">Skills</h2>
-          <div className="flex flex-wrap gap-2">
-            <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
-              Programming
-            </span>
-            <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
-              Web Development
-            </span>
-          </div>
-        </div>
-
-        {/* Projects Card */}
-        <div className="bg-white p-6 rounded-lg shadow-lg">
-          <h2 className="text-xl font-semibold mb-4">Recent Projects</h2>
-          <ul className="list-disc list-inside space-y-2">
-            <li>Student Management System</li>
-            <li>E-commerce Website</li>
-          </ul>
-        </div>
+    <div className="p-6 max-w-7xl mx-auto">
+      <div className="mb-8">
+        <h1 className="text-3xl sm:text-4xl font-bold text-gray-800">
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-blue-800">
+            Student Dashboard
+          </span>
+        </h1>
       </div>
 
-      {/* Recent Job Postings Section */}
-      <div className="mt-8 mb-8">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">Recent Job Opportunities</h2>
-          <Link 
-            to="/student/jobs" 
-            className="text-blue-600 hover:text-blue-800 font-medium flex items-center"
-          >
-            View All Jobs
+      
+      {/* Recent Job Postings Section - Updated styling */}
+      <div className="bg-white rounded-xl shadow-md p-6 mb-8">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-semibold text-gray-800 flex items-center">
+            <svg className="w-6 h-6 mr-2 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            Recent Job Opportunities
+          </h2>
+          <Link to="/student/jobs" className="text-blue-600 hover:text-blue-800 font-medium flex items-center">
+            View All
             <svg className="w-5 h-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </Link>
         </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {recentJobs.map((job) => {
-            // Check if user has already applied
-            const hasApplied = job.applicants?.some(
+            const isApplied = appliedJobs.has(job._id) || job.applicants?.some(
               applicant => applicant.student?._id === localStorage.getItem('userId')
             );
             
             return (
-              <div key={job._id} className="bg-white p-6 rounded-lg shadow-lg">
+              <div key={job._id} className="bg-white p-6 rounded-lg shadow-lg relative overflow-hidden group hover:shadow-xl transition-all duration-300">
                 <div className="flex items-start justify-between mb-2">
                   <h3 className="font-bold text-lg">{job.title}</h3>
                   <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
@@ -236,21 +191,24 @@ const StudentDashboard = () => {
                     Deadline: {new Date(job.applicationDeadline).toLocaleDateString()}
                   </span>
                   
-                  {hasApplied ? (
-                    <span className="px-3 py-1 bg-green-100 text-green-800 rounded text-sm">
+                  {isApplied ? (
+                    <span className="px-4 py-2 bg-green-100 text-green-700 rounded-lg flex items-center font-medium">
+                      <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
                       Applied
                     </span>
                   ) : (
                     <div className="flex space-x-2">
                       <button
                         onClick={() => handleApplyForJob(job._id)}
-                        className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
+                        className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
                       >
-                        Apply
+                        Apply Now
                       </button>
                       <Link
                         to={`/student/jobs/${job._id}`}
-                        className="px-3 py-1 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 text-sm"
+                        className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
                       >
                         Details
                       </Link>
@@ -269,18 +227,26 @@ const StudentDashboard = () => {
         </div>
       </div>
 
-      {/* Events Section */}
-      <div className="mt-8">
-        <h2 className="text-xl font-bold mb-4">Upcoming Events</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Events Section - Updated styling */}
+      <div className="bg-white rounded-xl shadow-md p-6">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-semibold text-gray-800 flex items-center">
+            <svg className="w-6 h-6 mr-2 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            Upcoming Events
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {events.map((event) => {
-            const userRegistration = event.registeredStudents?.find(
+            const isRegistered = registeredEvents.has(event._id) || event.registeredStudents?.some(
               reg => reg.userId === localStorage.getItem('userId')
             );
             const seatsRemaining = event.studentSeats - (event.registeredStudents?.filter(reg => reg.status === 'approved')?.length || 0);
 
             return (
-              <div key={event._id} className="bg-white p-6 rounded-lg shadow-lg">
+              <div key={event._id} className="bg-white p-6 rounded-lg shadow-lg group hover:shadow-xl transition-all duration-300">
                 <h3 className="font-bold text-lg mb-2">{event.title}</h3>
                 <div className="space-y-2 mb-4">
                   <p className="text-gray-600">
@@ -301,19 +267,22 @@ const StudentDashboard = () => {
                 </div>
                 <p className="text-gray-700 mb-4 line-clamp-3">{event.description}</p>
                 
-                {userRegistration ? (
-                  <div className="text-center py-2 rounded bg-green-100 text-green-800">
-                    Registered
+                {isRegistered ? (
+                  <div className="flex items-center justify-center bg-green-50 text-green-700 py-3 px-4 rounded-lg font-medium">
+                    <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Registration Confirmed
                   </div>
                 ) : seatsRemaining > 0 ? (
                   <button
                     onClick={() => handleRegister(event._id)}
-                    className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition-colors"
+                    className="w-full bg-gradient-to-r from-blue-600 to-blue-800 hover:bg-purple-700 text-white py-3 px-4 rounded-lg transition-colors font-medium"
                   >
-                    Register
+                    Register for Event
                   </button>
                 ) : (
-                  <div className="text-center py-2 bg-gray-100 text-gray-800 rounded">
+                  <div className="text-center py-3 bg-gray-50 text-gray-600 rounded-lg font-medium">
                     No Seats Available
                   </div>
                 )}

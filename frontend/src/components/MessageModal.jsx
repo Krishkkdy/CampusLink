@@ -137,27 +137,22 @@ const MessageModal = ({ user, onClose }) => {
   return (
     <div className="flex flex-col h-full">
       {/* Chat Header */}
-      <div className="px-4 py-3 bg-white border-b flex items-center">
+      <div className="px-6 py-4 bg-gradient-to-r from-blue-600 to-blue-800 flex items-center justify-between">
         <div className="flex items-center flex-1">
           <img
             src={user.profile?.basicInfo?.avatar || `https://ui-avatars.com/api/?name=${user.name}`}
             alt={user.name}
-            className="w-10 h-10 rounded-full"
+            className="w-10 h-10 rounded-full border-2 border-white"
           />
           <div className="ml-3">
-            <h2 className="font-medium text-gray-900">{user.name}</h2>
-            <p className="text-sm text-gray-500">{user.role}</p>
+            <h2 className="font-medium text-white">{user.name}</h2>
+            <p className="text-sm text-blue-100">{user.role}</p>
           </div>
         </div>
-        <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full">
-          <svg className="w-6 h-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-2 bg-[#efeae2]">
+      <div className="flex-1 overflow-y-auto p-4 space-y-2 bg-gradient-to-b from-gray-50 to-white">
         {messages.map((message) => (
           <div
             key={message._id}
@@ -165,11 +160,11 @@ const MessageModal = ({ user, onClose }) => {
           >
             <div className={`max-w-[70%] rounded-lg px-4 py-2 shadow-sm
               ${message.sender._id === currentUser._id 
-                ? 'bg-[#dcf8c6] ml-auto' 
+                ? 'bg-blue-600 text-white' 
                 : 'bg-white'}`}
             >
-              <p className="text-gray-800">{message.content}</p>
-              <p className="text-xs text-gray-500 text-right mt-1">
+              <p>{message.content}</p>
+              <p className={`text-xs ${message.sender._id === currentUser._id ? 'text-blue-100' : 'text-gray-500'} text-right mt-1`}>
                 {new Date(message.timestamp).toLocaleTimeString([], {
                   hour: '2-digit',
                   minute: '2-digit'
@@ -182,12 +177,12 @@ const MessageModal = ({ user, onClose }) => {
       </div>
 
       {/* Message Input */}
-      <form onSubmit={handleSend} className="p-3 bg-white flex items-center space-x-2">
+      <form onSubmit={handleSend} className="p-4 bg-white border-t border-gray-200 flex items-center space-x-2">
         <input
           type="text"
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
-          className="flex-1 py-2 px-4 bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex-1 py-2 px-4 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           placeholder={
             !canSendMessage && currentUser.role === 'student' 
               ? "Wait for alumni to send first message" 
@@ -198,13 +193,13 @@ const MessageModal = ({ user, onClose }) => {
         <button
           type="submit"
           disabled={!canSendMessage && currentUser.role === 'student'}
-          className={`p-2 rounded-full ${
+          className={`p-3 rounded-full ${
             (!canSendMessage && currentUser.role === 'student')
               ? 'bg-gray-200 cursor-not-allowed'
-              : 'bg-blue-500 hover:bg-blue-600'
+              : 'bg-blue-600 hover:bg-blue-700 text-white'
           }`}
         >
-          <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
           </svg>
         </button>

@@ -1,6 +1,6 @@
 import React from 'react';
 
-const StudentProfileModal = ({ student, onClose, onConnect, connectionStatus }) => {
+const StudentProfileModal = ({ student, onClose }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6">
@@ -107,30 +107,6 @@ const StudentProfileModal = ({ student, onClose, onConnect, connectionStatus }) 
                   </a>
                 )}
               </div>
-            </div>
-          )}
-
-          {/* Connection Controls */}
-          {onConnect && (
-            <div className="col-span-full mt-4 border-t pt-4">
-              {!connectionStatus && (
-                <button
-                  onClick={onConnect}
-                  className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                >
-                  Connect
-                </button>
-              )}
-              {connectionStatus === 'sent' && (
-                <button disabled className="w-full bg-gray-300 text-gray-600 px-4 py-2 rounded">
-                  Request Sent
-                </button>
-              )}
-              {connectionStatus === 'accepted' && (
-                <button disabled className="w-full bg-green-100 text-green-600 px-4 py-2 rounded">
-                  Connected
-                </button>
-              )}
             </div>
           )}
         </div>
