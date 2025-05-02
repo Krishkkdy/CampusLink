@@ -21,7 +21,7 @@ const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: "https://campus-link-lemon.vercel.app",
+    origin: 'https://campus-link-lemon.vercel.app', // Vite default port
     methods: ["GET", "POST"]
   }
 });
