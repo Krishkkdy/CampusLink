@@ -21,14 +21,14 @@ const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: "https://campus-link-lemon.vercel.app",
     methods: ["GET", "POST"]
   }
 });
 
 // CORS Configuration
 app.use(cors({
-  origin: 'http://localhost:5173', // Vite default port
+  origin: 'https://campus-link-lemon.vercel.app', // Vite default port
   credentials: true
 }));
 

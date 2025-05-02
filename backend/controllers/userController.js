@@ -423,7 +423,7 @@ export const forgotPassword = async (req, res) => {
   user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
   await user.save();
 
-  const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${token}`;
+  const resetUrl = `https://campus-link-lemon.vercel.app/reset-password/${token}`;
   await sendResetPasswordEmail(user.email, resetUrl);
 
   res.json({ message: 'Password reset email sent' });
