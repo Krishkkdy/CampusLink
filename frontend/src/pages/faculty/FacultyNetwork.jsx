@@ -211,20 +211,20 @@ const ViewNetwork = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl sm:text-4xl font-bold text-gray-800">
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-blue-800">
-            View Network
-          </span>
-        </h1>
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-blue-800">
+              View Network
+            </span>
+          </h1>
           {pendingRequests.length > 0 && (
             <button 
               onClick={() => document.getElementById('requestsSection').scrollIntoView({ behavior: 'smooth' })}
-              className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center space-x-2"
+              className="w-full sm:w-auto px-3 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:shadow-lg transition-all duration-200 flex items-center justify-center sm:justify-start gap-2"
             >
-              <span className="text-sm font-medium">Connection Requests</span>
-              <span className="bg-blue-500/20 px-2 py-1 rounded-full text-xs">
+              <span className="text-sm sm:text-base font-medium whitespace-nowrap">Connection Requests</span>
+              <span className="inline-flex items-center justify-center min-w-[1.5rem] h-6 px-2 bg-blue-500/20 rounded-full text-xs">
                 {pendingRequests.length}
               </span>
             </button>
@@ -232,11 +232,11 @@ const ViewNetwork = () => {
         </div>
 
         {pendingRequests.length > 0 && (
-          <div id="requestsSection" className="bg-white rounded-xl shadow-sm border border-gray-200/80 p-6 mb-8">
-            <h3 className="text-lg font-semibold mb-6 text-gray-900">
+          <div id="requestsSection" className="bg-white rounded-xl shadow-sm border border-gray-200/80 p-3 sm:p-6 mb-4 sm:mb-8">
+            <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-6 text-gray-900">
               Connection Requests ({pendingRequests.length})
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
               {pendingRequests.map((user) => (
                 <div key={user._id} className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow">
                   <div 
@@ -278,14 +278,14 @@ const ViewNetwork = () => {
           </div>
         )}
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200/80 overflow-hidden mb-8">
-          <div className="border-b border-gray-200">
-            <div className="flex">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200/80 overflow-hidden">
+          <div className="border-b border-gray-200 overflow-x-auto">
+            <div className="flex min-w-max">
               {['alumni', 'students', 'faculty'].map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`flex-1 px-6 py-4 text-sm font-medium text-center capitalize transition-colors
+                  className={`flex-1 min-w-[120px] px-4 sm:px-6 py-3 sm:py-4 text-sm font-medium text-center capitalize transition-colors
                     ${activeTab === tab 
                       ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50/50' 
                       : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
@@ -297,17 +297,17 @@ const ViewNetwork = () => {
             </div>
           </div>
 
-          <div className="p-6">
-            <div className="relative mb-6">
+          <div className="p-4 sm:p-6">
+            <div className="relative mb-4 sm:mb-6">
               <input
                 type="text"
-                placeholder="Search by name, department, or specialization..."
-                className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                placeholder="Search network..."
+                className="w-full pl-10 pr-4 py-2 sm:py-3 bg-gray-50 border border-gray-200 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm sm:text-base"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
               <svg 
-                className="w-6 h-6 text-gray-400 absolute left-4 top-1/2 transform -translate-y-1/2" 
+                className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" 
                 fill="none" 
                 viewBox="0 0 24 24" 
                 stroke="currentColor"
@@ -316,10 +316,10 @@ const ViewNetwork = () => {
               </svg>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               {activeTab === 'alumni' && filteredAlumni.map(alumnus => (
-                <div key={alumnus._id} className="group bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300">
-                  <div className="p-6 cursor-pointer" onClick={() => setSelectedAlumnus(alumnus)}>
+                <div key={alumnus._id} className="group bg-white rounded-lg sm:rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300">
+                  <div className="p-4 sm:p-6 cursor-pointer" onClick={() => setSelectedAlumnus(alumnus)}>
                     <div className="flex items-start space-x-4">
                       <img
                         src={alumnus.profile?.basicInfo?.avatar || `https://ui-avatars.com/api/?name=${alumnus.name}`}
@@ -341,13 +341,13 @@ const ViewNetwork = () => {
                     </div>
                   </div>
 
-                  <div className="px-6 py-4 bg-gray-50 border-t border-gray-100">
+                  <div className="px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 border-t border-gray-100">
                     {!connections[alumnus._id] && (
                       <button
                         onClick={() => handleConnect(alumnus._id)}
-                        className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-800 transition-colors flex items-center justify-center space-x-2"
+                        className="w-full bg-blue-600 text-white px-3 sm:px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-800 transition-colors flex items-center justify-center space-x-2 text-sm sm:text-base"
                       >
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                         </svg>
                         <span>Connect</span>
@@ -384,8 +384,8 @@ const ViewNetwork = () => {
                 </div>
               ))}
               {activeTab === 'students' && filteredStudents.map(student => (
-                <div key={student._id} className="group bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300">
-                  <div className="p-6 cursor-pointer" onClick={() => setSelectedStudent(student)}>
+                <div key={student._id} className="group bg-white rounded-lg sm:rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300">
+                  <div className="p-4 sm:p-6 cursor-pointer" onClick={() => setSelectedStudent(student)}>
                     <div className="flex items-start space-x-4">
                       <img
                         src={student.profile?.basicInfo?.avatar || `https://ui-avatars.com/api/?name=${student.name}`}
@@ -407,8 +407,8 @@ const ViewNetwork = () => {
                 </div>
               ))}
               {activeTab === 'faculty' && filteredFaculty.map(faculty => (
-                <div key={faculty._id} className="group bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300">
-                  <div className="p-6 cursor-pointer" onClick={() => setSelectedFaculty(faculty)}>
+                <div key={faculty._id} className="group bg-white rounded-lg sm:rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300">
+                  <div className="p-4 sm:p-6 cursor-pointer" onClick={() => setSelectedFaculty(faculty)}>
                     <div className="flex items-start space-x-4">
                       <img
                         src={faculty.profile?.basicInfo?.avatar || `https://ui-avatars.com/api/?name=${faculty.name}`}
@@ -431,7 +431,7 @@ const ViewNetwork = () => {
                     </div>
                   </div>
 
-                  <div className="px-6 py-4 bg-gray-50 border-t border-gray-100">
+                  <div className="px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 border-t border-gray-100">
                     {!connections[faculty._id] && (
                       <button
                         onClick={(e) => {

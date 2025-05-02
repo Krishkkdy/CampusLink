@@ -66,17 +66,17 @@ const JobPostingsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-3 sm:p-6">
+      <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0">
+          <h1 className="text-2xl sm:text-3xl font-bold">
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-blue-800">
               Job Postings
             </span>
           </h1>
           <button 
             onClick={() => setIsJobFormOpen(true)}
-            className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-2 rounded-lg hover:opacity-90 transition-all duration-200 flex items-center space-x-2"
+            className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 sm:px-6 py-2 rounded-lg hover:opacity-90 transition-all duration-200 flex items-center justify-center sm:justify-start space-x-2"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -85,7 +85,7 @@ const JobPostingsPage = () => {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
           <StatsCard
             title="Total Jobs"
             value={jobPostingStats.total}
@@ -106,17 +106,35 @@ const JobPostingsPage = () => {
           />
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-6">Your Job Postings</h2>
+        <div className="bg-white rounded-xl shadow-sm p-3 sm:p-6">
+          <div className="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:justify-between sm:items-center mb-4 sm:mb-6">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-800">Your Job Postings</h2>
+            <div className="w-full sm:w-auto">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search jobs..."
+                  className="w-full sm:w-64 px-3 sm:px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
+                />
+              </div>
+            </div>
+          </div>
+
           {jobPostings.length > 0 ? (
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 gap-4 sm:gap-6">
               {jobPostings.map((job) => (
-                <JobPostingCard key={job._id} job={job} onRefresh={fetchJobPostings} />
+                <div key={job._id} className="transition-all duration-200">
+                  <JobPostingCard job={job} onRefresh={fetchJobPostings} />
+                </div>
               ))}
             </div>
           ) : (
-            <div className="text-center text-gray-500 py-4">
-              You haven't created any job postings yet.
+            <div className="text-center text-gray-500 py-6 sm:py-8 px-3 sm:px-4">
+              <svg className="w-12 h-12 sm:w-16 sm:h-16 mx-auto text-gray-400 mb-3 sm:mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+              </svg>
+              <p className="text-base sm:text-lg">You haven't created any job postings yet.</p>
+              <p className="text-xs sm:text-sm text-gray-400 mt-1">Click the "Create Job Posting" button to get started.</p>
             </div>
           )}
         </div>

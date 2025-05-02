@@ -120,11 +120,20 @@ const NotificationBell = ({ userId }) => {
       {showDropdown && (
         <div 
           ref={dropdownRef}
-          className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-xl z-50"
+          className="fixed inset-x-0 mx-auto top-16 sm:absolute sm:right-0 sm:top-full sm:left-auto mt-2 w-[95%] sm:w-96 bg-white rounded-lg shadow-xl z-50 max-h-[85vh] sm:max-h-[600px] overflow-hidden"
+          style={{ maxWidth: '40rem' }}
         >
-          <div className="max-h-[80vh] overflow-y-auto">
-            <div className="sticky top-0 bg-gray-50 p-4 border-b">
+          <div className="overflow-y-auto">
+            <div className="sticky top-0 bg-gray-50 p-4 border-b flex justify-between items-center">
               <h3 className="text-lg font-semibold text-gray-800">Notifications</h3>
+              <button 
+                onClick={() => setShowDropdown(false)}
+                className="p-1 hover:bg-gray-200 rounded-full transition-colors"
+              >
+                <svg className="w-6 h-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
             
             <div className="divide-y divide-gray-100">
@@ -141,7 +150,7 @@ const NotificationBell = ({ userId }) => {
                       <div className="flex items-start">
                         <div className="flex-shrink-0 bg-blue-500 rounded-full p-2">
                           <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 6 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                           </svg>
                         </div>
                         <div className="ml-4 flex-1">

@@ -139,6 +139,14 @@ const MessageModal = ({ user, onClose }) => {
       {/* Chat Header */}
       <div className="px-6 py-4 bg-gradient-to-r from-blue-600 to-blue-800 flex items-center justify-between">
         <div className="flex items-center flex-1">
+          <button
+            onClick={onClose}
+            className="md:hidden mr-3 text-white hover:bg-blue-700 p-1 rounded-full"
+          >
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
           <img
             src={user.profile?.basicInfo?.avatar || `https://ui-avatars.com/api/?name=${user.name}`}
             alt={user.name}
