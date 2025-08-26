@@ -18,5 +18,5 @@ services:
       - key: JWT_EXPIRES_IN
         value: 30d
       - key: FRONTEND_URL
-        value: http://localhost:5173
+        value: https://campus-link-lemon.vercel.app
     plan: free

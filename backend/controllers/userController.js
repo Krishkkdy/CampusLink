@@ -412,7 +412,6 @@ export const getAllFaculty = async (req, res) => {
   }
 };
 
-
 export const forgotPassword = async (req, res) => {
   const { email } = req.body;
   const user = await User.findOne({ email });
@@ -423,7 +422,12 @@ export const forgotPassword = async (req, res) => {
   user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
   await user.save();
 
-  const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${token}`;
+  // Hard-coded production URL to ensure it's always correct
+  const deployedUrl = "https://campus-link-lemon.vercel.app";
+  const resetUrl = `${deployedUrl}/reset-password/${token}`;
+  
+  console.log("Reset URL:", resetUrl); // Log URL for debugging
+  
   await sendResetPasswordEmail(user.email, resetUrl);
 
   res.json({ message: 'Password reset email sent' });

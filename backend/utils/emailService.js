@@ -44,6 +44,8 @@ export const sendWelcomeEmail = async (email, password, role) => {
 };
 
 export const sendResetPasswordEmail = async (email, resetUrl) => {
+  console.log("Sending reset email with URL:", resetUrl);
+  
   const mailOptions = {
     from: `"Alumni-Connect" <${process.env.EMAIL_USER}>`,  // Updated sender
     to: email,
@@ -57,9 +59,11 @@ export const sendResetPasswordEmail = async (email, resetUrl) => {
   };
   try {
     await transporter.sendMail(mailOptions);
-    console.log('Reset password email sent');
+    console.log('Reset password email sent successfully to', email);
+    return true;
   } catch (error) {
     console.error('Error sending reset password email:', error);
+    return false;
   }
 };
 

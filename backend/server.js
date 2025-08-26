@@ -21,18 +21,28 @@ const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
+<<<<<<< HEAD
     origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
     methods: ['GET', 'POST'],
     credentials: true
+=======
+    origin: 'https://campus-link-lemon.vercel.app', // Vite default port
+    methods: ["GET", "POST"]
+>>>>>>> 23b210e1fc7a7f4573c78ff893872f9dbf69983f
   }
 });
 
 // CORS Configuration
 app.use(cors({
+<<<<<<< HEAD
   origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization']
+=======
+  origin: 'https://campus-link-lemon.vercel.app', // Vite default port
+  credentials: true
+>>>>>>> 23b210e1fc7a7f4573c78ff893872f9dbf69983f
 }));
 
 app.use(express.json());

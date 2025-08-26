@@ -2,6 +2,13 @@
 
 CampusLink is a platform designed to foster meaningful interactions between students and alumni. It provides a space for networking, mentorship, event participation, and career opportunities, bridging the gap between current students and alumni.
 
+---
+<b> 👉 Demo Access Login Credentials 👈 </b>
+
+- Username: admin@example.com
+- Password: admin123
+---
+
 ![React](https://img.shields.io/badge/Frontend-React-blue?style=flat-square&logo=react) 
 ![Node.js](https://img.shields.io/badge/Backend-Node.js-green?style=flat-square&logo=node.js) 
 ![MongoDB](https://img.shields.io/badge/Database-MongoDB-brightgreen?style=flat-square&logo=mongodb) 
@@ -66,7 +73,6 @@ CampusLink is a platform designed to foster meaningful interactions between stud
    PORT=5000
    MONGO_URI=your_mongo_connection_string
    JWT_SECRET=your_jwt_secret
-   CLOUDINARY_URL=your_cloudinary_url
    ```
 
 4. Start the development servers:
