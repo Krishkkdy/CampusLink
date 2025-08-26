@@ -15,22 +15,22 @@ const Login = () => {
     
     try {
       let endpoint = `${import.meta.env.VITE_API_URL}/users/login`;
-      let body = { email, password };
-      
-      // If it's admin login, use admin endpoint
-      if (email === 'admin@campuslink.com') { // Updated admin email
+      if (email === 'admin@campuslink.com') {
         endpoint = `${import.meta.env.VITE_API_URL}/admin/login`;
       }
       
+      console.log('Attempting login to:', endpoint); // Debug log
+
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
-        credentials: 'include',
-        body: JSON.stringify(body),
+        body: JSON.stringify({ email, password }),
       });
+      
+      console.log('Response status:', res.status); // Debug log
       
       const data = await res.json();
       
@@ -58,7 +58,7 @@ const Login = () => {
       }
     } catch (error) {
       console.error('Login error:', error);
-      setError(error.message || 'Login failed. Please try again.');
+      setError('Failed to connect to server. Please try again.');
     }
   };
 
@@ -120,3 +120,4 @@ const Login = () => {
 };
 
 export default Login;
+

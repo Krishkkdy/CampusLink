@@ -19,31 +19,38 @@ dotenv.config();
 
 const app = express();
 const httpServer = createServer(app);
+
+// Updated CORS configuration with specific origins
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'http://localhost:5000'
+];
+
+app.use(cors({
+  origin: function(origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      return callback(null, false);
+    }
+    return callback(null, true);
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
+
+// Update Socket.io configuration
 const io = new Server(httpServer, {
   cors: {
-<<<<<<< HEAD
-    origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+    origin: allowedOrigins,
     methods: ['GET', 'POST'],
-    credentials: true
-=======
-    origin: 'https://campus-link-lemon.vercel.app', // Vite default port
-    methods: ["GET", "POST"]
->>>>>>> 23b210e1fc7a7f4573c78ff893872f9dbf69983f
-  }
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization']
+  },
+  transports: ['websocket', 'polling']
 });
-
-// CORS Configuration
-app.use(cors({
-<<<<<<< HEAD
-  origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  credentials: true,
-  allowedHeaders: ['Content-Type', 'Authorization']
-=======
-  origin: 'https://campus-link-lemon.vercel.app', // Vite default port
-  credentials: true
->>>>>>> 23b210e1fc7a7f4573c78ff893872f9dbf69983f
-}));
 
 app.use(express.json());
 
@@ -189,3 +196,4 @@ app.use((err, req, res, next) => {
 // Update server startup
 const PORT = process.env.PORT || 5000;
 httpServer.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+

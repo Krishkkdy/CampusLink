@@ -11,14 +11,21 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-// Add error handling and verification
-transporter.verify(function(error, success) {
-  if (error) {
-    console.log('SMTP Error:', error);
-  } else {
-    console.log('SMTP server is ready to send emails');
+// Verify transporter connection
+const verifyConnection = async () => {
+  try {
+    await transporter.verify();
+    console.log('SMTP connection verified successfully');
+  } catch (error) {
+    console.error('SMTP Connection Error:', error);
+    console.log('Email Config:', {
+      user: process.env.EMAIL_USER,
+      passLength: process.env.EMAIL_PASS ? process.env.EMAIL_PASS.length : 0
+    });
   }
-});
+};
+
+verifyConnection();
 
 export const sendWelcomeEmail = async (email, password, role) => {
   const mailOptions = {
@@ -26,7 +33,7 @@ export const sendWelcomeEmail = async (email, password, role) => {
     to: email,
     subject: 'Welcome to Alumni-Connect',
     html: `
-      <h1>Welcome to CampusLink!</h1>
+      <h1>Welcome to Alumni-Connect!</h1>
       <p>Your account has been created as a ${role}.</p>
       <p>Your login credentials:</p>
       <p>Email: ${email}</p>
@@ -69,7 +76,7 @@ export const sendResetPasswordEmail = async (email, resetUrl) => {
 
 export const sendGenericEmail = async (email, subject, message) => {
   const mailOptions = {
-    from: `"CampusLink" <${process.env.EMAIL_USER}>`,  // Updated sender
+    from: `"Alumni-Connect" <${process.env.EMAIL_USER}>`,  // Updated sender
     to: email,
     subject: subject,
     html: message
