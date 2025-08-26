@@ -18,16 +18,17 @@ const Login = () => {
       let body = { email, password };
       
       // If it's admin login, use admin endpoint
-      if (email === 'admin@example.com') {
+      if (email === 'admin@campuslink.com') { // Updated admin email
         endpoint = `${import.meta.env.VITE_API_URL}/admin/login`;
-        body = { email, password, username: email };
       }
       
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify(body),
       });
       

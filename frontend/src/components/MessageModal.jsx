@@ -5,6 +5,7 @@ import { SocketContext } from '../context/SocketContext';
 const MessageModal = ({ user, onClose }) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
+  const [unreadCount, setUnreadCount] = useState(0);
   const messagesEndRef = useRef(null);
   const { user: currentUser } = useContext(AuthContext);
   const { socket } = useContext(SocketContext);
@@ -133,6 +134,39 @@ const MessageModal = ({ user, onClose }) => {
       alert('Failed to send message. Please try again.');
     }
   };
+
+  useEffect(() => {
+    const countUnreadMessages = () => {
+      const count = messages.filter(msg => 
+        msg.sender._id === user._id && !msg.read
+      ).length;
+      setUnreadCount(count);
+    };
+
+    countUnreadMessages();
+  }, [messages, user._id]);
+
+  useEffect(() => {
+    const markMessagesAsRead = async () => {
+      try {
+        await fetch(
+          `${import.meta.env.VITE_API_URL}/messages/${user._id}/read`,
+          {
+            method: 'PUT',
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('userToken')}`
+            }
+          }
+        );
+      } catch (error) {
+        console.error('Error marking messages as read:', error);
+      }
+    };
+
+    if (user?._id) {
+      markMessagesAsRead();
+    }
+  }, [user._id]);
 
   return (
     <div className="flex flex-col h-full">

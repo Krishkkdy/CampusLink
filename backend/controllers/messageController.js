@@ -47,3 +47,20 @@ export const markAsRead = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const markAllAsRead = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    await Message.updateMany(
+      {
+        sender: userId,
+        receiver: req.user._id,
+        read: false
+      },
+      { read: true }
+    );
+    res.json({ message: 'All messages marked as read' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

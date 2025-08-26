@@ -7,6 +7,7 @@ const Messages = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const { user } = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
+  const [unreadMessages, setUnreadMessages] = useState({});
 
   useEffect(() => {
     const fetchConnections = async () => {
@@ -29,10 +30,37 @@ const Messages = () => {
       }
     };
 
+    const fetchUnreadCounts = async () => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/messages/unread-counts`,
+          {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('userToken')}`
+            }
+          }
+        );
+        const data = await response.json();
+        setUnreadMessages(data);
+      } catch (error) {
+        console.error('Error fetching unread counts:', error);
+      }
+    };
+
     if (user?._id) {
       fetchConnections();
+      fetchUnreadCounts();
     }
   }, [user]);
+
+  const handleSelectUser = (connection) => {
+    setSelectedUser(connection.user);
+    // Clear unread count for this user
+    setUnreadMessages(prev => ({
+      ...prev,
+      [connection.user._id]: 0
+    }));
+  };
 
   if (loading) {
     return <div className="p-6 text-center">Loading messages...</div>;
@@ -71,7 +99,7 @@ const Messages = () => {
                 {connections.map(connection => (
                   <div
                     key={connection.user._id}
-                    onClick={() => setSelectedUser(connection.user)}
+                    onClick={() => handleSelectUser(connection)}
                     className={`flex items-center p-4 hover:bg-blue-50 cursor-pointer transition-colors duration-200 border-b border-gray-100
                       ${selectedUser?._id === connection.user._id ? 'bg-blue-50' : ''}`}
                   >
@@ -83,7 +111,14 @@ const Messages = () => {
                     />
                     <div className="ml-3 flex-1 min-w-0">
                       <div className="flex justify-between items-baseline">
-                        <h3 className="font-semibold text-gray-900 truncate">{connection.user.name}</h3>
+                        <h3 className="font-semibold text-gray-900 truncate">
+                          {connection.user.name}
+                          {unreadMessages[connection.user._id] > 0 && (
+                            <span className="ml-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
+                              {unreadMessages[connection.user._id]}
+                            </span>
+                          )}
+                        </h3>
                         <span className="text-xs text-gray-500 ml-2 flex-shrink-0">
                           {connection.lastMessage?.timestamp && 
                             new Date(connection.lastMessage.timestamp).toLocaleTimeString([], 

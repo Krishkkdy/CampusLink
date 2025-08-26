@@ -31,20 +31,19 @@ const AdminDashboard = () => {
         eventsRes.json()
       ]);
 
+      // Filter upcoming events properly
+      const currentDate = new Date();
       const validEvents = eventsData.filter(event => {
         const eventDate = new Date(event.date);
-        const currentDate = new Date();
-        return (
-          event.createdBy?.profile?.basicInfo?.department && 
-          eventDate >= currentDate
-        );
+        return eventDate >= currentDate;
       });
 
       setCounts({
         alumni: alumniData.length,
         faculty: facultyData.length,
       });
-      setEvents(validEvents);
+      setEvents(validEvents); // Set filtered events
+      console.log('Upcoming events count:', validEvents.length); // Debug log
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -79,7 +78,7 @@ const AdminDashboard = () => {
     },
     { 
       title: "Upcoming Events", 
-      count: events.length,
+      count: events.length || '0',  // Add fallback for empty state
       color: "from-purple-500 to-purple-600",
       icon: (
         <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -221,7 +220,9 @@ const AdminDashboard = () => {
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto p-4 sm:p-8">
               <div className="flex justify-between items-start mb-4 sm:mb-6">
-                <h2 className="text-xl sm:text-2xl font-bold">Upcoming Events</h2>
+                <h2 className="text-xl sm:text-2xl font-bold">
+                  Upcoming Events ({events.length})
+                </h2>
                 <button 
                   onClick={() => setSelectedEvent(false)}
                   className="text-gray-500 hover:text-gray-700"
@@ -238,39 +239,24 @@ const AdminDashboard = () => {
                     <div key={event._id} className="border rounded-lg p-4 hover:bg-gray-50">
                       <h3 className="font-bold text-base sm:text-lg text-gray-800">{event.title}</h3>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4 my-2">
-                        <p className="text-sm sm:text-base text-gray-600">Date: {new Date(event.date).toLocaleDateString()}</p>
-                        <p className="text-sm sm:text-base text-gray-600">Venue: {event.venue}</p>
+                        <p className="text-sm sm:text-base text-gray-600">
+                          Date: {new Date(event.date).toLocaleString()}
+                        </p>
+                        <p className="text-sm sm:text-base text-gray-600">
+                          Venue: {event.venue}
+                        </p>
                       </div>
-                      <p className="text-sm sm:text-base text-gray-600 mb-2">{event.description}</p>
-                      <p className="text-sm sm:text-base text-gray-500 mb-2">
-                        Posted by: {event.createdBy?.name} ({event.createdBy?.profile?.basicInfo?.department || 'No department'})
+                      <p className="text-sm sm:text-base text-gray-600 mb-2">
+                        {event.description}
                       </p>
-                      <div className="mt-4 border-t pt-4">
-                        <h4 className="font-semibold mb-2">
-                          Interested Alumni ({event.interestedUsers?.length || 0})
-                        </h4>
-                        <div className="max-h-60 overflow-y-auto">
-                          {event.interestedUsers?.map((alumnus) => (
-                            <div
-                              key={alumnus._id}
-                              onClick={() => setSelectedAlumnus(alumnus)}
-                              className="flex items-center space-x-3 p-2 hover:bg-gray-100 rounded cursor-pointer"
-                            >
-                              <img
-                                src={alumnus.profile?.basicInfo?.avatar || `https://ui-avatars.com/api/?name=${alumnus.name}`}
-                                alt={alumnus.name}
-                                className="w-10 h-10 rounded-full"
-                              />
-                              <div>
-                                <p className="font-medium">{alumnus.name}</p>
-                                <p className="text-sm text-gray-600">
-                                  {alumnus.profile?.basicInfo?.department || 'No department'} 
-                                  {alumnus.profile?.academic?.graduationYear && ` | ${alumnus.profile.academic.graduationYear}`}
-                                </p>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
+                      <div className="flex items-center justify-between text-sm text-gray-500">
+                        <span>
+                          Posted by: {event.createdBy?.name} 
+                          ({event.createdBy?.profile?.basicInfo?.department || 'No department'})
+                        </span>
+                        <span>
+                          {event.interestedUsers?.length || 0} interested alumni
+                        </span>
                       </div>
                     </div>
                   ))}
@@ -402,3 +388,5 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+
+                  
