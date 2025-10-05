@@ -5,17 +5,32 @@ export const submitResume = async (req, res) => {
     const resumeData = JSON.parse(req.body.resumeData);
     const fileUrl = req.file ? `/uploads/resumes/${req.file.filename}` : null;
 
+    // Create resume object with all fields
     const resume = new Resume({
       student: req.user._id,
-      ...resumeData,
+      education: resumeData.education || [],
+      experience: resumeData.experience || [],
+      skills: resumeData.skills || [],
+      projects: resumeData.projects || [],
+      certifications: resumeData.certifications || [],
       fileUrl,
       status: 'pending'
     });
 
     await resume.save();
-    res.status(201).json(resume);
+
+    // Populate necessary fields before sending response
+    const populatedResume = await Resume.findById(resume._id)
+      .populate('student', 'name email')
+      .populate('feedback.alumni', 'name email profile');
+
+    res.status(201).json(populatedResume);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Error submitting resume:', error);
+    res.status(500).json({ 
+      message: 'Failed to submit resume', 
+      error: error.message 
+    });
   }
 };
 

@@ -4,25 +4,43 @@ const resumeSchema = new mongoose.Schema({
   student: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true,
-    unique: true
+    required: true
   },
-  filePath: {
+  education: [{
+    institution: String,
+    degree: String,
+    year: String
+  }],
+  experience: [{
+    company: String,
+    role: String,
+    duration: String,
+    description: String
+  }],
+  projects: [{
+    name: String,
+    description: String,
+    technologies: String
+  }],
+  skills: [String],
+  certifications: [String],
+  fileUrl: String,
+  status: {
     type: String,
-    required: true
+    enum: ['draft', 'pending', 'reviewed'],
+    default: 'pending'
   },
-  fileName: {
-    type: String,
-    required: true
-  },
-  fileSize: {
-    type: Number,
-    required: true
-  },
-  uploadDate: {
-    type: Date,
-    default: Date.now
-  }
+  feedback: [{
+    alumni: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    },
+    comment: String,
+    createdAt: {
+      type: Date,
+      default: Date.now
+    }
+  }]
 }, {
   timestamps: true
 });
